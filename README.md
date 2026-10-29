@@ -1,2 +1,2 @@
-# ulitsy-shanhaya
-Shanghai streets map of Russian history
+Статический сайт «На улицах Шанхая».
+Страницы: https://vitalykurn.github.io/ulitsy-shanhaya/

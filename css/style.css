@@ -1,0 +1,270 @@
+:root {
+  --paper: #f3eee4;
+  --ink: #241c16;
+  --bronze: #8a4e2b;
+  --stamp: #7a2f28;
+  --muted: #6d5e52;
+  --card: #fffaf3;
+  --line: #e2d3c2;
+  --sky: #d9e2ea;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(138, 78, 43, 0.08), transparent 32%),
+    var(--paper);
+  color: var(--ink);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+body[data-lang="ru"] .zh { display: none; }
+body[data-lang="zh"] .ru { display: none; }
+
+a { color: var(--bronze); }
+a:hover { color: var(--stamp); }
+
+.skip {
+  position: absolute;
+  left: -999px;
+  top: 0;
+}
+.skip:focus {
+  left: 8px;
+  top: 8px;
+  background: #fff;
+  padding: 8px 12px;
+  z-index: 5;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: rgba(243, 238, 228, 0.94);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+
+.top-row {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 14px 20px 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.brand {
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand strong {
+  font-family: Georgia, "Palatino Linotype", "Songti SC", serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.brand small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.langs { display: flex; gap: 6px; }
+
+.langs button {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+body[data-lang="ru"] .langs button[data-set-lang="ru"],
+body[data-lang="zh"] .langs button[data-set-lang="zh"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+nav {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 12px 10px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 15px;
+  padding: 6px 10px;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+
+nav a[aria-current="page"] { border-bottom-color: var(--bronze); }
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 20px 64px;
+}
+
+main.wide { max-width: 1040px; }
+
+h1 {
+  font-family: Georgia, "Palatino Linotype", "Songti SC", serif;
+  font-size: 40px;
+  line-height: 1.15;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.deck {
+  color: var(--muted);
+  font-size: 20px;
+  margin: 0 0 22px;
+}
+
+.kicker {
+  color: var(--bronze);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.addr {
+  display: inline-block;
+  margin: 0 0 18px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--bronze);
+  font-size: 16px;
+}
+
+p { margin: 0 0 14px; }
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.card {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+  padding: 16px 16px 14px;
+  min-height: 150px;
+}
+
+.card:hover { border-color: var(--bronze); }
+
+.num {
+  font-family: Georgia, "Palatino Linotype", serif;
+  color: var(--stamp);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.card h2 {
+  font-family: Georgia, "Palatino Linotype", "Songti SC", serif;
+  font-size: 22px;
+  margin: 8px 0;
+}
+
+.card p { margin: 0; font-size: 16px; }
+
+figure {
+  margin: 8px 0 22px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 8px;
+}
+
+figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+figcaption {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 8px 4px 2px;
+}
+
+.portrait {
+  max-width: 360px;
+}
+
+.map-wrap {
+  height: 460px;
+  border: 1px solid var(--line);
+  background: var(--sky);
+  margin: 8px 0 18px;
+}
+
+#map { height: 100%; width: 100%; }
+
+.map-note {
+  background: var(--card);
+  border-left: 4px solid var(--stamp);
+  padding: 12px 14px;
+  margin: 0 0 18px;
+}
+
+.places {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.places li {
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+}
+
+.places a { font-weight: 650; text-decoration: none; }
+
+.facts { padding-left: 18px; }
+.facts li { margin: 0 0 12px; }
+.facts a { word-break: break-all; }
+
+footer {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+footer div {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 18px 20px 28px;
+}
+
+@media (max-width: 720px) {
+  h1 { font-size: 32px; }
+  .cards { grid-template-columns: 1fr; }
+  .map-wrap { height: 340px; }
+  body { font-size: 17px; }
+}
