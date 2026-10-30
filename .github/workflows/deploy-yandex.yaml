@@ -1,0 +1,111 @@
+name: Deploy to Yandex Object Storage
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  YC_BUCKET_NAME: ulitsy-shanhaya.ru
+
+jobs:
+  deploy:
+    name: Deploy site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/yandex-cloud/bin" >> "$GITHUB_PATH"
+
+      - name: Configure Yandex Cloud CLI
+        env:
+          YC_SA_JSON_CREDENTIALS: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+        run: |
+          export PATH="$HOME/yandex-cloud/bin:$PATH"
+          if [ -z "$YC_SA_JSON_CREDENTIALS" ]; then
+            echo "YC_SA_JSON_CREDENTIALS is not set"
+            exit 1
+          fi
+          printf '%s\n' "$YC_SA_JSON_CREDENTIALS" > /tmp/key.json
+          yc config set service-account-key /tmp/key.json
+          rm -f /tmp/key.json
+          yc config list >/dev/null
+
+      - name: Upload site
+        run: |
+          export PATH="$HOME/yandex-cloud/bin:$PATH"
+          export YC_CLI_INITIALIZATION_SILENCE=true
+
+          if [ ! -d site ]; then
+            echo "site directory not found"
+            exit 1
+          fi
+
+          content_type_for() {
+            case "$1" in
+              *.html) echo "text/html; charset=utf-8" ;;
+              *.css) echo "text/css; charset=utf-8" ;;
+              *.js) echo "application/javascript; charset=utf-8" ;;
+              *.json) echo "application/json; charset=utf-8" ;;
+              *.svg) echo "image/svg+xml" ;;
+              *.png) echo "image/png" ;;
+              *.jpg|*.jpeg) echo "image/jpeg" ;;
+              *.webp) echo "image/webp" ;;
+              *.ico) echo "image/x-icon" ;;
+              *) echo "application/octet-stream" ;;
+            esac
+          }
+
+          cache_control_for() {
+            case "$1" in
+              *.html|*.htm|*.txt) echo "public, max-age=60" ;;
+              *) echo "public, max-age=31536000, immutable" ;;
+            esac
+          }
+
+          : > /tmp/local_files.txt
+          uploaded=0
+          while IFS= read -r -d '' file; do
+            rel="${file#site/}"
+            base="$(basename "$rel")"
+            case "$base" in
+              _*) continue ;;
+            esac
+            case "$rel" in
+              *.py|*/__pycache__/*) continue ;;
+            esac
+            printf '%s\n' "$rel" >> /tmp/local_files.txt
+            yc storage s3api put-object \
+              --bucket "$YC_BUCKET_NAME" \
+              --key "$rel" \
+              --body "$file" \
+              --content-type "$(content_type_for "$rel")" \
+              --cache-control "$(cache_control_for "$rel")"
+            uploaded=$((uploaded + 1))
+          done < <(find site -type f -print0)
+
+          if [ "$uploaded" -eq 0 ]; then
+            echo "no files uploaded"
+            exit 1
+          fi
+          echo "uploaded $uploaded files"
+
+          yc --format json storage s3api list-objects-v2 \
+            --bucket "$YC_BUCKET_NAME" \
+            --max-keys 10000 | jq -r '.Contents[]?.Key // empty' > /tmp/remote_files.txt || true
+
+          while IFS= read -r remote_file; do
+            [ -z "$remote_file" ] && continue
+            if ! grep -Fxq "$remote_file" /tmp/local_files.txt; then
+              echo "delete $remote_file"
+              yc storage s3api delete-object --bucket "$YC_BUCKET_NAME" --key "$remote_file"
+            fi
+          done < /tmp/remote_files.txt
+
+      - name: Done
+        run: echo "http://${YC_BUCKET_NAME}.website.yandexcloud.net"

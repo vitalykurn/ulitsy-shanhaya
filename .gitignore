@@ -1,0 +1,9 @@
+yandex_key.env
+sert_ssl.env
+vk.env
+telegram.env
+telegram.end
+__pycache__/
+*.pyc
+Thumbs.db
+.DS_Store
