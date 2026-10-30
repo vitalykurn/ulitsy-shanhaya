@@ -1,0 +1,4 @@
+yandex_key.env
+sert_ssl.env
+__pycache__/
+*.pyc
