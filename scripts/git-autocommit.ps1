@@ -48,7 +48,14 @@ function Invoke-Git {
     $prevEap = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        $output = & git @GitArgs 2>&1
+        # Git writes errors to stderr; avoid NativeCommandError noise in PowerShell.
+        $output = & git.exe @GitArgs 2>&1 | ForEach-Object {
+            if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                $_.ToString()
+            } else {
+                $_
+            }
+        }
         return @{
             ExitCode = $LASTEXITCODE
             Output   = @($output)
