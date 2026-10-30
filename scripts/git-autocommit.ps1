@@ -43,21 +43,46 @@ function Get-RepositoryRoot {
     return Split-Path -Parent (Split-Path -Parent $ScriptPath)
 }
 
+function Invoke-Git {
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $output = & git @GitArgs 2>&1
+        return @{
+            ExitCode = $LASTEXITCODE
+            Output   = @($output)
+        }
+    } finally {
+        $ErrorActionPreference = $prevEap
+    }
+}
+
 function Push-CurrentBranch {
-    $branch = (git rev-parse --abbrev-ref HEAD).Trim()
-    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) {
+    $head = Invoke-Git rev-parse --abbrev-ref HEAD
+    if ($head.ExitCode -ne 0) {
+        throw "Failed to resolve current branch."
+    }
+    $branch = ($head.Output | Out-String).Trim()
+    if ([string]::IsNullOrWhiteSpace($branch)) {
         throw "Failed to resolve current branch."
     }
 
-    $upstream = (git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>$null)
-    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($upstream)) {
+    $upstream = Invoke-Git rev-parse --abbrev-ref --symbolic-full-name "@{u}"
+    $hasUpstream = ($upstream.ExitCode -eq 0) -and -not [string]::IsNullOrWhiteSpace(($upstream.Output | Out-String).Trim())
+
+    if (-not $hasUpstream) {
         Write-Host "No upstream configured. Pushing with -u origin $branch ..."
-        git push -u origin $branch
+        $push = Invoke-Git push -u origin $branch
     } else {
-        git push
+        $push = Invoke-Git push
     }
 
-    if ($LASTEXITCODE -ne 0) {
+    if ($push.ExitCode -ne 0) {
+        $detail = ($push.Output | Out-String).Trim()
+        if ($detail) {
+            Write-Host $detail
+        }
         throw "git push failed."
     }
 }
