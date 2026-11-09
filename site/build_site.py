@@ -621,7 +621,7 @@ def article_ld(filename, title_ru, desc_ru, credits):
         "description": desc_ru,
         "inLanguage": ["ru", "zh"],
         "url": page_url(filename),
-        "dateModified": "2026-10-30",
+        "dateModified": "2026-11-09",
         "author": {"@type": "Person", "name": "Вера Курносенко"},
     }
     geos = []
@@ -836,7 +836,7 @@ def route_page(route):
         "description": desc_ru,
         "inLanguage": ["ru", "zh"],
         "url": page_url(route["file"]),
-        "dateModified": "2026-10-30",
+        "dateModified": "2026-11-09",
         "author": {"@type": "Person", "name": "Вера Курносенко"},
     })
     first = place_by_id(route["stops"][0])
@@ -858,8 +858,8 @@ def routes_index():
     body = "\n".join([
         f"<h1>{bi_span('Маршруты', '路线')}</h1>",
         both(
-            "Пять листов из историй, которые уже написаны. Это не отчёт о пройденных километрах: шаги я ещё не мерила.",
-            "五张纸来自已经写好的故事。这不是走过多少公里的报告：步数我还没量。",
+            "Шесть листов из историй, которые уже написаны. Это не отчёт о пройденных километрах: шаги я ещё не мерила.",
+            "六张纸来自已经写好的故事。这不是走过多少公里的报告：步数我还没量。",
             "p",
             "deck",
         ),
@@ -929,7 +929,7 @@ def lesson_page():
         both(lesson["topic_ru"], lesson["topic_zh"]),
         f'<h2>{bi_span("Цель", "目标")}</h2>',
         both(lesson["goal_ru"], lesson["goal_zh"]),
-        f'<h2>{bi_span("Пять фактов", "五个事实")}</h2>',
+        f'<h2>{bi_span("Факты листа", "这一页上的事实")}</h2>',
         f"<ol class=\"facts\">\n{facts}\n</ol>",
         f'<h2>{bi_span("Вопрос до маршрута", "出发前的问题")}</h2>',
         both(lesson["before_ru"], lesson["before_zh"]),
@@ -1016,7 +1016,7 @@ def write_seo_files():
     for filename in pages:
         lines.append("  <url>")
         lines.append(f"    <loc>{escape(page_url(filename))}</loc>")
-        lines.append("    <lastmod>2026-10-30</lastmod>")
+        lines.append("    <lastmod>2026-11-09</lastmod>")
         lines.append("  </url>")
     lines.append("</urlset>")
     (ROOT / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
