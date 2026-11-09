@@ -255,7 +255,7 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
   <meta property="og:image" content="{esc(image or ('https://' + content.DOMAIN + '/img/avatar.jpg'))}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="img/avatar.jpg">
-  <link rel="stylesheet" href="css/style.css">{leaflet_css}
+  <link rel="stylesheet" href="css/style.css?v=20261109">{leaflet_css}
   {ld}
 </head>
 <body data-lang="ru">
@@ -387,7 +387,7 @@ def mini_map_html(credits):
     return f"""<section class="map-preview wide-inner" aria-labelledby="map-preview-title">
   <h2 id="map-preview-title">{bi_span("На карте Шанхая", "在上海地图上")}</h2>
   <p class="meta">{bi_span("Пять булавок — дома с тротуара. Остальные истории в каталоге «Места».", "五个钉子——从人行道看得见。别的故事在「地点」目录里。")}</p>
-  <div class="map-wrap map-wrap--preview"><div id="map-home" data-points="{data}" role="region" aria-label="Превью карты"></div></div>
+  <div class="map-wrap map-wrap--preview"><div id="map-home" style="height:100%;width:100%" data-points="{data}" role="region" aria-label="Превью карты"></div></div>
   <p class="map-legend">{bi_span("Красные маркеры — 1930–40-е и эмиграция. Синий — 1950-е.", "红钉：1930–40年代和侨民。蓝钉：1950年代。")}</p>
   <p class="map-preview-links"><a href="karta.html">{bi_span("Открыть полную карту", "打开完整地图")}</a> · <a href="mesta.html">{bi_span("Все места и фильтры", "全部地点和筛选")}</a> · <a href="marshruty.html">{bi_span("Проложить маршрут", "选一条路线")}</a></p>
 </section>
@@ -510,7 +510,7 @@ def map_html(credits):
   <button type="button" data-view="list" aria-pressed="false">{bi_span("Список", "名单")}</button>
 </div>
 <div class="map-layout is-map">
-  <div class="map-wrap"><div id="map" data-points="{data}" role="region" aria-label="Карта мест"></div></div>
+  <div class="map-wrap"><div id="map" style="height:100%;width:100%" data-points="{data}" role="region" aria-label="Карта мест"></div></div>
   <p id="map-empty" hidden>{bi_span("На карте для этой темы булавки нет. История может быть в списке ниже.", "这个题目在地图上没有钉子。故事可能在下面的名单里。")}</p>
   <ul class="places" data-map-list>
 {''.join(items)}
@@ -667,7 +667,7 @@ def place_spot_map(filename, credits):
         return "", False
     data = escape(json.dumps(points, ensure_ascii=False), quote=True)
     html = f"""<h2>{bi_span("На карте", "在地图上")}</h2>
-<div class="map-wrap map-wrap--spot"><div id="map-spot" data-points="{data}" role="region"></div></div>
+<div class="map-wrap map-wrap--spot"><div id="map-spot" style="height:100%;width:100%" data-points="{data}" role="region"></div></div>
 <p><a href="karta.html">{bi_span("Открыть полную карту", "打开完整地图")}</a></p>"""
     return html, True
 

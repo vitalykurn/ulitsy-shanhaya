@@ -373,7 +373,7 @@ figure img { display: block; width: 100%; height: auto; }
   margin: 8px 0 12px;
 }
 
-#map { height: 100%; width: 100%; }
+#map, #map-home, #map-spot { height: 100%; width: 100%; }
 
 .map-note {
   background: var(--card);
