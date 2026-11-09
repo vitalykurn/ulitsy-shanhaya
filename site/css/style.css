@@ -92,8 +92,9 @@ a:hover { color: var(--brick); }
 
 .brand strong {
   font-family: Georgia, "Palatino Linotype", "Songti SC", "STSong", serif;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 body[data-lang="zh"] .brand strong,
@@ -457,7 +458,7 @@ footer div {
   .map-wrap { height: 68vh; min-height: 280px; }
   .top-row { flex-direction: column; align-items: stretch; }
   .tools { flex-direction: row; justify-content: space-between; align-items: center; width: 100%; }
-  .brand strong { font-size: 20px; }
+  .brand strong { font-size: 17px; }
   .menu-toggle { display: inline-flex; align-items: center; justify-content: center; }
   .site-nav { display: none; flex-direction: column; padding: 0 12px 10px; gap: 2px; }
   .site-nav.is-open { display: flex; }

@@ -225,8 +225,8 @@ def og_image(filename, credits, photos=None):
 
 def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, scripts="", ld="", image=None):
     desc_ru, desc_zh = descriptions(filename, title_ru, title_zh)
-    title_full_ru = f"{title_ru} — {content.SITE_NAME_RU}"
-    title_full_zh = f"{title_zh} — {content.SITE_NAME_ZH}"
+    title_full_ru = content.SITE_NAME_RU if title_ru == content.SITE_NAME_RU else f"{title_ru} — {content.SITE_NAME_RU}"
+    title_full_zh = content.SITE_NAME_ZH if title_zh == content.SITE_NAME_ZH else f"{title_zh} — {content.SITE_NAME_ZH}"
     canonical = page_url(filename)
     leaflet_css = '\n  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">' if leaflet else ""
     wide_cls = " wide" if wide else ""
@@ -255,7 +255,7 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
   <meta property="og:image" content="{esc(image or ('https://' + content.DOMAIN + '/img/avatar.jpg'))}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="img/avatar.jpg">
-  <link rel="stylesheet" href="css/style.css?v=20261109">{leaflet_css}
+  <link rel="stylesheet" href="css/style.css?v=20261109b">{leaflet_css}
   {ld}
 </head>
 <body data-lang="ru">
