@@ -20,6 +20,13 @@ def paras(items, cls):
     return "\n".join(f'<p class="{cls}">{esc(item)}</p>' for item in items)
 
 
+def answer_p(filename):
+    pair = content.ANSWERS.get(filename)
+    if not pair:
+        return ""
+    return both(pair[0], pair[1], "p", "answer")
+
+
 def both(ru, zh, tag="p", cls=""):
     extra = f" {cls}" if cls else ""
     return (
@@ -255,7 +262,7 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
   <meta property="og:image" content="{esc(image or ('https://' + content.DOMAIN + '/img/avatar.jpg'))}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="img/avatar.jpg">
-  <link rel="stylesheet" href="css/style.css?v=20261109b">{leaflet_css}
+  <link rel="stylesheet" href="css/style.css?v=20261112">{leaflet_css}
   {ld}
 </head>
 <body data-lang="ru">
@@ -296,6 +303,7 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
         <a href="karta.html">{bi_span("Карта", "地图")}</a>
         <a href="proekt.html">{bi_span("Проект", "项目")}</a>
         <a href="istochniki.html">{bi_span("Откуда", "出处")}</a>
+        <a href="llms.txt">llms.txt</a>
       </p>
       <p class="follow">{bi_span(content.HOME_FOLLOW[0], content.HOME_FOLLOW[1])}</p>
       <span class="ru">Карта для класса, не путеводитель. Сайт: <a href="https://{esc(content.DOMAIN)}">{esc(content.DOMAIN)}</a>. Чужие фото подписаны. Домашний адрес и телефон здесь не публикуются.</span>
@@ -425,10 +433,47 @@ def pubs_html():
     return '<ul class="pubs">\n' + "\n".join(items) + "\n</ul>"
 
 
+def faq_section():
+    rows = []
+    for item in content.FAQ:
+        rows.append(
+            '<div class="faq-item">\n'
+            f'  <h3>{bi_span(item["q_ru"], item["q_zh"])}</h3>\n'
+            f'  {both(item["a_ru"], item["a_zh"])}\n'
+            "</div>"
+        )
+    return (
+        '<section class="faq" id="voprosy">\n'
+        f'<h2>{bi_span("Коротко, если спросить", "要是问一句")}</h2>\n'
+        + "\n".join(rows)
+        + "\n</section>"
+    )
+
+
+def faq_ld():
+    entities = []
+    for item in content.FAQ:
+        for question, answer in (
+            (item["q_ru"], item["a_ru"]),
+            (item["q_zh"], item["a_zh"]),
+        ):
+            entities.append({
+                "@type": "Question",
+                "name": question,
+                "acceptedAnswer": {"@type": "Answer", "text": answer},
+            })
+    return json_ld({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": entities,
+    })
+
+
 def home_html(page, credits):
     parts = [
         '<section class="hero">',
         f"<h1>{bi_span(page['h1_ru'], page['h1_zh'])}</h1>",
+        answer_p("index.html"),
         both(page["deck_ru"], page["deck_zh"], "p", "deck"),
         both(page["pitch_ru"], page["pitch_zh"], "p", "pitch"),
         f'<p class="audience">{bi_span(page["audience_ru"], page["audience_zh"])}</p>',
@@ -437,6 +482,7 @@ def home_html(page, credits):
     ]
     if page.get("mini_map"):
         parts.append(mini_map_html(credits))
+    parts.append(faq_section())
     parts.extend([
         value_grid(),
         '<section class="routes-teaser">',
@@ -621,7 +667,7 @@ def article_ld(filename, title_ru, desc_ru, credits):
         "description": desc_ru,
         "inLanguage": ["ru", "zh"],
         "url": page_url(filename),
-        "dateModified": "2026-11-09",
+        "dateModified": "2026-11-12",
         "author": {"@type": "Person", "name": "Вера Курносенко"},
     }
     geos = []
@@ -721,6 +767,7 @@ def render(page, credits):
                 (page["h1_ru"], page["h1_zh"]),
             ])
         chunks.append(f"<h1>{bi_span(page['h1_ru'], page['h1_zh'])}</h1>")
+        chunks.append(answer_p(page["file"]))
         if page.get("deck_ru"):
             chunks.append(both(page["deck_ru"], page["deck_zh"], "p", "deck"))
         if page.get("addr_ru"):
@@ -766,7 +813,7 @@ def render(page, credits):
             "inLanguage": ["ru", "zh"],
             "description": desc_ru,
             "author": {"@type": "Person", "name": "Вера Курносенко"},
-        })
+        }) + faq_ld()
     else:
         ld = article_ld(page["file"], page["h1_ru"], desc_ru, credits) + extra_ld
     wide = bool(page.get("map") or page.get("cards") or page.get("home"))
@@ -802,6 +849,7 @@ def route_page(route):
                 seen.add(fact["url"])
     body = "\n".join([
         f"<h1>{bi_span(route['title_ru'], route['title_zh'])}</h1>",
+        answer_p(route["file"]),
         both(route["question_ru"], route["question_zh"], "p", "deck"),
         '<ul class="sheet-meta">',
         f"<li>{bi_span('Возраст: ' + route['age_ru'], '年龄：' + route['age_zh'])}</li>",
@@ -836,7 +884,7 @@ def route_page(route):
         "description": desc_ru,
         "inLanguage": ["ru", "zh"],
         "url": page_url(route["file"]),
-        "dateModified": "2026-11-09",
+        "dateModified": "2026-11-12",
         "author": {"@type": "Person", "name": "Вера Курносенко"},
     })
     first = place_by_id(route["stops"][0])
@@ -857,6 +905,7 @@ def routes_index():
         )
     body = "\n".join([
         f"<h1>{bi_span('Маршруты', '路线')}</h1>",
+        answer_p("marshruty.html"),
         both(
             "Шесть листов из историй, которые уже написаны. Это не отчёт о пройденных километрах: шаги я ещё не мерила.",
             "六张纸来自已经写好的故事。这不是走过多少公里的报告：步数我还没量。",
@@ -887,6 +936,7 @@ def catalog_page():
         )
     body = "\n".join([
         f"<h1>{bi_span('Места', '地点')}</h1>",
+        answer_p("mesta.html"),
         both(
             "Фильтры по периоду, типу места и школьной теме. Поиск — по названию, улице или слову в тексте.",
             "按年代、地点类型和课堂题目筛选。搜索名称、街名或正文里的词。",
@@ -922,6 +972,7 @@ def lesson_page():
     )
     body = "\n".join([
         f"<h1>{bi_span(lesson['h1_ru'], lesson['h1_zh'])}</h1>",
+        answer_p("urok.html"),
         both(lesson["deck_ru"], lesson["deck_zh"], "p", "deck"),
         f'<h2>{bi_span("Возраст", "年龄")}</h2>',
         both(lesson["age_ru"], lesson["age_zh"]),
@@ -951,6 +1002,7 @@ def lesson_page():
 def project_page():
     parts = [
         f"<h1>{bi_span('Проект', '项目')}</h1>",
+        answer_p("proekt.html"),
         both(
             "Эта страница для жюри, учителя и СМИ: что сделано, чего нет, и как проверяются факты.",
             "这一页给评委、老师和媒体：已经做了什么、还没有什么、事实怎么核对。",
@@ -988,6 +1040,7 @@ def project_page():
 def missing_page():
     body = "\n".join([
         f"<h1>{bi_span('Такой страницы нет', '没有这一页')}</h1>",
+        answer_p("404.html"),
         both(
             "Адрес не совпал ни с одним местом. Карта и каталог на месте.",
             "这个地址对不上任何地点。地图和目录还在。",
@@ -1008,6 +1061,52 @@ def missing_page():
     write_page("404.html", "Страница не найдена", "没有这一页", body)
 
 
+def llms_txt():
+    titles = {
+        "marshruty.html": "Маршруты",
+        "mesta.html": "Места",
+        "urok.html": content.LESSON["h1_ru"],
+        "proekt.html": "Проект",
+    }
+    for page in content.PAGES:
+        titles[page["file"]] = page["h1_ru"]
+    for route in content.ROUTES:
+        titles[route["file"]] = route["title_ru"]
+    order = [page["file"] for page in content.PAGES]
+    order += ["marshruty.html", "mesta.html", "urok.html", "proekt.html"]
+    order += [route["file"] for route in content.ROUTES]
+    lines = [
+        f"# {content.SITE_NAME_RU}",
+        "",
+        f"> {content.ANSWERS['index.html'][0]}",
+        "",
+        f"Сайт: {page_url('index.html')}",
+        "Языки: русский и китайский на одной странице. Китайский включается кнопкой, отдельного адреса нет.",
+        "Автор: Вера Курносенко, 12 лет, Шанхай. Школьный проект, не путеводитель.",
+        "Булавка только у дома, который видно с тротуара. У 1950 года, флотилии Старка и приюта Иоанна точки нет.",
+        "",
+        "## Страницы",
+        "",
+    ]
+    seen = set()
+    for filename in order:
+        if filename in seen or filename not in content.ANSWERS:
+            continue
+        seen.add(filename)
+        sentence = content.ANSWERS[filename][0].split(". ")[0] + "."
+        lines.append(f"- [{titles.get(filename, filename)}]({page_url(filename)}): {sentence}")
+    lines.extend([
+        "",
+        "## Чего на сайте нет",
+        "",
+        "- Домашнего адреса и телефона автора.",
+        "- Булавки там, где дома с тротуара нет.",
+        "- Склейки 1950 года с войной в Корее и дома дружбы 1955 года с лётчиками.",
+        "",
+    ])
+    return "\n".join(lines)
+
+
 def write_seo_files():
     pages = [page["file"] for page in content.PAGES]
     pages += [route["file"] for route in content.ROUTES]
@@ -1016,7 +1115,7 @@ def write_seo_files():
     for filename in pages:
         lines.append("  <url>")
         lines.append(f"    <loc>{escape(page_url(filename))}</loc>")
-        lines.append("    <lastmod>2026-11-09</lastmod>")
+        lines.append("    <lastmod>2026-11-12</lastmod>")
         lines.append("  </url>")
     lines.append("</urlset>")
     (ROOT / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -1026,8 +1125,10 @@ def write_seo_files():
         f"Sitemap: https://{content.DOMAIN}/sitemap.xml\n"
     )
     (ROOT / "robots.txt").write_text(robots, encoding="utf-8")
+    (ROOT / "llms.txt").write_text(llms_txt(), encoding="utf-8")
     print("sitemap.xml")
     print("robots.txt")
+    print("llms.txt")
 
 
 def write_text_bundle():

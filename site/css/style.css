@@ -204,6 +204,28 @@ h2 {
   margin: 0 0 16px;
 }
 
+.answer {
+  font-size: 18px;
+  line-height: 1.45;
+  max-width: 42rem;
+  color: var(--ink);
+}
+
+.faq {
+  max-width: 1040px;
+  margin: 8px auto 28px;
+}
+
+.faq-item {
+  margin: 0 0 18px;
+}
+
+.faq h3 {
+  font-size: 18px;
+  line-height: 1.35;
+  margin: 0 0 6px;
+}
+
 .deck { color: var(--muted); }
 
 .kicker {
