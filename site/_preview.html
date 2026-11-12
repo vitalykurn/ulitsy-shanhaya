@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Превью: шанхайский архив-открытка</title>
+  <style>
+    :root {
+      --paper: #f6f0e4;
+      --paper-2: #fbf7ee;
+      --jade-wash: #e4efe9;
+      --ink: #1f2430;
+      --cinnabar: #b3261e;
+      --indigo: #1f4e8c;
+      --graphite: #5c6570;
+      --gold: #8d6824;
+      --jade: #1f6b59;
+      --line: rgba(31, 36, 48, 0.16);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(184, 137, 59, 0.08), transparent 28%),
+        linear-gradient(180deg, var(--paper-2), var(--paper) 28%);
+      font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    body[data-lang="zh"] { line-height: 1.75; font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+    body[data-lang="ru"] .zh { display: none; }
+    body[data-lang="zh"] .ru { display: none; }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 64px; }
+    .note {
+      font-size: 14px;
+      color: var(--graphite);
+      border: 1px dashed var(--graphite);
+      padding: 8px 12px;
+      margin: 0 0 18px;
+    }
+    .bar { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 12px; }
+    .bar button, .btn {
+      min-height: 44px;
+      font: inherit;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    .bar button {
+      border: 1.5px solid var(--ink);
+      background: transparent;
+      padding: 6px 12px;
+    }
+    body[data-lang="ru"] .bar button[data-set-lang="ru"],
+    body[data-lang="zh"] .bar button[data-set-lang="zh"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .hero {
+      position: relative;
+      padding: 28px 8px 8px;
+    }
+    .hero h1, .card h2 {
+      font-family: Palatino, "Palatino Linotype", "Songti SC", Georgia, serif;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+    .hero h1 {
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.05;
+      margin: 8px 0 12px;
+    }
+    .hero h1 span { display: block; }
+    .deck { font-size: 20px; max-width: 36rem; margin: 0 0 18px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      padding: 10px 16px;
+      border: 2px solid var(--cinnabar);
+    }
+    .btn.primary { background: var(--cinnabar); color: #fff; }
+    .btn.ghost { background: transparent; color: var(--jade); border-color: var(--jade); }
+    .btn:focus-visible, .bar button:focus-visible, .pin:focus-visible {
+      outline: 3px solid var(--indigo);
+      outline-offset: 3px;
+    }
+    .stamp {
+      position: absolute;
+      right: 4px;
+      top: 18px;
+      width: 92px;
+      height: 92px;
+      border: 3px solid var(--cinnabar);
+      color: var(--cinnabar);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-family: "Songti SC", Palatino, serif;
+      font-size: 15px;
+      line-height: 1.15;
+      transform: rotate(-8deg);
+      background: rgba(246, 240, 228, 0.55);
+    }
+    .ornament {
+      height: 18px;
+      margin: 28px 0 8px;
+      background:
+        radial-gradient(circle at 12px 9px, transparent 5px, var(--gold) 6px, transparent 7px) 0 0 / 24px 18px repeat-x;
+      opacity: 0.7;
+    }
+    h2.section {
+      font-family: Palatino, "Palatino Linotype", "Songti SC", serif;
+      font-size: 28px;
+      margin: 8px 0 14px;
+    }
+    .cards { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .card {
+      background: var(--paper-2);
+      padding: 16px 16px 14px;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      border: 2px solid var(--cinnabar);
+      box-shadow: inset 0 0 0 1px rgba(179, 38, 30, 0.35);
+    }
+    .card.fifties { border-color: var(--indigo); box-shadow: inset 0 0 0 1px rgba(31, 78, 140, 0.35); }
+    .card.none {
+      border: 2px dashed var(--graphite);
+      box-shadow: none;
+    }
+    .card .era { font-size: 13px; letter-spacing: 0.04em; margin: 0 0 6px; }
+    .card.emigration .era { color: var(--cinnabar); }
+    .card.fifties .era { color: var(--indigo); }
+    .card.none .era { color: var(--graphite); }
+    .card h2 { font-size: 26px; margin: 0 0 8px; }
+    .card p { margin: 0; }
+    .card:hover, .card:focus-visible { transform: translateY(-2px); }
+    .map-sheet {
+      background: var(--jade-wash);
+      border: 1px solid var(--line);
+      padding: 16px;
+    }
+    .map-fake {
+      position: relative;
+      height: 280px;
+      background:
+        linear-gradient(rgba(31, 36, 48, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(31, 36, 48, 0.05) 1px, transparent 1px),
+        #efe4cf;
+      background-size: 28px 28px, 28px 28px, auto;
+      border: 1px solid rgba(31, 36, 48, 0.2);
+    }
+    .pin {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .pin svg { display: block; filter: drop-shadow(0 2px 1px rgba(31, 36, 48, 0.25)); }
+    .pin .tip {
+      display: none;
+      position: absolute;
+      left: 32px;
+      top: -8px;
+      width: 180px;
+      background: var(--paper-2);
+      border: 1.5px solid var(--ink);
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .pin:hover .tip, .pin:focus-visible .tip, .pin:focus .tip { display: block; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px 18px; margin-top: 12px; font-size: 15px; }
+    .swatch { width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: -1px; border-radius: 50%; }
+    .swatch.red { background: var(--cinnabar); }
+    .swatch.blue { background: var(--indigo); }
+    .swatch.gray { background: transparent; border: 1.5px dashed var(--graphite); }
+    @media (min-width: 800px) {
+      .cards { grid-template-columns: 1fr 1fr 1fr; }
+      .stamp { right: 24px; top: 36px; }
+    }
+    @media (max-width: 520px) {
+      .stamp { position: static; margin: 0 0 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body data-lang="ru">
+  <div class="wrap">
+    <p class="note"><span class="ru">Это превью трёх блоков, не сайт. Факты и булавки те же, что уже на страницах.</span><span class="zh">这是三个区块的预览，不是网站。事实和钉子跟现有页面一样。</span></p>
+    <div class="bar">
+      <button type="button" data-set-lang="ru">Русский</button>
+      <button type="button" data-set-lang="zh">中文</button>
+    </div>
+
+    <header class="hero">
+      <div class="stamp" aria-hidden="true">上海<br>Шанхай</div>
+      <h1>
+        <span class="ru">История России на улицах Шанхая</span>
+        <span class="zh">上海街上的俄国史</span>
+      </h1>
+      <p class="deck"><span class="ru">Школьный маршрут по местам, где русская история стала частью современного Шанхая.</span><span class="zh">给中学生的路线：俄国史融进今天的上海街景。</span></p>
+      <div class="actions">
+        <a class="btn primary" href="karta.html"><span class="ru">Открыть карту</span><span class="zh">打开地图</span></a>
+        <a class="btn ghost" href="marshruty.html"><span class="ru">Начать маршрут</span><span class="zh">开始路线</span></a>
+      </div>
+    </header>
+
+    <div class="ornament" aria-hidden="true"></div>
+    <h2 class="section"><span class="ru">Карточка истории</span><span class="zh">故事卡片</span></h2>
+    <div class="cards">
+      <a class="card emigration" href="pushkin.html">
+        <p class="era"><span class="ru">1937 и 1987 · красная булавка</span><span class="zh">1937、1987 · 红钉</span></p>
+        <h2><span class="ru">Пушкин</span><span class="zh">普希金</span></h2>
+        <p><span class="ru">Русские в Шанхае поставили поэту памятник и сначала повернули его лицом к России.</span><span class="zh">上海的俄国人给他立了像，一开始脸朝俄国。</span></p>
+      </a>
+      <a class="card fifties" href="vystavka.html">
+        <p class="era"><span class="ru">1955 · синяя булавка</span><span class="zh">1955 · 蓝钉</span></p>
+        <h2><span class="ru">Дом дружбы</span><span class="zh">友好大厦</span></h2>
+        <p><span class="ru">Выставочный центр строили как Дом советско-китайской дружбы. К лётчикам он не относится.</span><span class="zh">展览中心原来叫中苏友好大厦。它跟飞行员不是一回事。</span></p>
+      </a>
+      <a class="card none" href="nebo.html">
+        <p class="era"><span class="ru">1950 · булавки нет</span><span class="zh">1950 · 没有钉子</span></p>
+        <h2><span class="ru">Небо города</span><span class="zh">城市的天空</span></h2>
+        <p><span class="ru">Лётчики закрывали Шанхай. Это не война в Корее. Памятника на тротуаре нет.</span><span class="zh">飞行员来保护上海。这不是朝鲜战争。人行道上没有纪念碑。</span></p>
+      </a>
+    </div>
+
+    <div class="ornament" aria-hidden="true"></div>
+    <h2 class="section"><span class="ru">Булавки</span><span class="zh">钉子</span></h2>
+    <div class="map-sheet">
+      <div class="map-fake">
+        <button class="pin" style="left:28%;top:46%" type="button" aria-label="Пушкин, красная булавка">
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 26C14 26 24 16.5 24 10.5A10 10 0 1 0 4 10.5C4 16.5 14 26 14 26Z" fill="#b3261e" stroke="#1f2430" stroke-width="1.4"/><circle cx="14" cy="10.5" r="3.2" fill="#fbf7ee"/></svg>
+          <span class="tip"><span class="ru">Пушкин. Фэньян, Юэян, Таоцзян.</span><span class="zh">普希金像。汾阳路、岳阳路、桃江路。</span></span>
+        </button>
+        <button class="pin" style="left:62%;top:28%" type="button" aria-label="Выставочный центр, синяя булавка">
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 26C14 26 24 16.5 24 10.5A10 10 0 1 0 4 10.5C4 16.5 14 26 14 26Z" fill="#1f4e8c" stroke="#1f2430" stroke-width="1.4"/><circle cx="14" cy="10.5" r="3.2" fill="#fbf7ee"/></svg>
+          <span class="tip"><span class="ru">Выставочный центр. Яньань, 1000.</span><span class="zh">上海展览中心。延安中路1000号。</span></span>
+        </button>
+        <button class="pin" style="left:46%;top:62%" type="button" aria-label="1950, булавки нет">
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="9" fill="none" stroke="#5c6570" stroke-width="1.6" stroke-dasharray="3 2.5"/></svg>
+          <span class="tip"><span class="ru">1950. Дома нет, булавку не ставлю.</span><span class="zh">1950。没有那栋房子，我不钉钉子。</span></span>
+        </button>
+      </div>
+      <p class="legend">
+        <span><i class="swatch red"></i><span class="ru">1930–40-е и эмиграция</span><span class="zh">1930–40年代和侨民</span></span>
+        <span><i class="swatch blue"></i><span class="ru">1950-е</span><span class="zh">1950年代</span></span>
+        <span><i class="swatch gray"></i><span class="ru">История без дома</span><span class="zh">没有房子的故事</span></span>
+      </p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var key = "ulitsy-lang";
+      function apply(lang) {
+        if (lang !== "zh") lang = "ru";
+        document.body.setAttribute("data-lang", lang);
+        document.documentElement.lang = lang === "zh" ? "zh-Hans" : "ru";
+        try { localStorage.setItem(key, lang); } catch (e) {}
+      }
+      var saved = "ru";
+      try { saved = localStorage.getItem(key) || "ru"; } catch (e) {}
+      apply(saved);
+      document.querySelectorAll("[data-set-lang]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          apply(btn.getAttribute("data-set-lang"));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
