@@ -399,13 +399,13 @@ def mini_map_html(credits):
     data = escape(json.dumps(map_points(credits), ensure_ascii=False), quote=True)
     return f"""<section class="map-preview wide-inner" aria-labelledby="map-preview-title">
   <h2 id="map-preview-title">{bi_span("На карте Шанхая", "在上海地图上")}</h2>
-  <p class="meta">{bi_span("Пять булавок — дома с тротуара. Остальные истории в каталоге «Места».", "五个钉子——从人行道看得见。别的故事在「地点」目录里。")}</p>
+  <p class="meta">{bi_span("Одиннадцать булавок — места, которые видно с тротуара. Остальные истории в каталоге «Места».", "十一个钉子——从人行道看得见。别的故事在「地点」目录里。")}</p>
   <div class="map-wrap map-wrap--preview"><div id="map-home" style="height:100%;width:100%" data-points="{data}" role="region" aria-label="Превью карты"></div></div>
-  <p class="map-legend">{bi_span("Красные маркеры — 1930–40-е и эмиграция. Синий — 1950-е.", "红钉：1930–40年代和侨民。蓝钉：1950年代。")}</p>
+  <p class="map-legend">{bi_span("Зелёные маркеры — Российская империя, до 1917. Красные — 1920–40-е и эмиграция. Синий — 1950-е.", "绿钉：1917年以前的沙俄时期。红钉：1920–40年代和侨民。蓝钉：1950年代。")}</p>
   <p class="map-preview-links"><a href="karta.html">{bi_span("Открыть полную карту", "打开完整地图")}</a> · <a href="mesta.html">{bi_span("Все места и фильтры", "全部地点和筛选")}</a> · <a href="marshruty.html">{bi_span("Проложить маршрут", "选一条路线")}</a></p>
 </section>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/map.js"></script>"""
+<script src="js/map.js?v=20261119"></script>"""
 
 
 def steps_html():
@@ -573,7 +573,7 @@ def map_html(credits):
   <p><a href="nebo.html">{bi_span("Открыть 1950", "打开1950")}</a></p>
 </aside>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/map.js"></script>"""
+<script src="js/map.js?v=20261119"></script>"""
 
 
 def facts_html(items):
@@ -825,7 +825,7 @@ def render(page, credits):
     leaflet = bool(page.get("map") or page.get("mini_map") or spot_leaflet)
     scripts = ""
     if spot_leaflet and not page.get("map") and not page.get("mini_map"):
-        scripts = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/map.js"></script>'
+        scripts = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/map.js?v=20261119"></script>'
     write_page(
         page["file"], page["h1_ru"], page["h1_zh"], "\n".join(chunks),
         credits=credits, photos=page.get("photos"),

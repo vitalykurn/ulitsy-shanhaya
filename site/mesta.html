@@ -60,8 +60,8 @@
   </header>
   <main id="content" class="wide">
 <h1><span class="ru">Места</span><span class="zh">地点</span></h1>
-<p class="ru answer">В каталоге восемь тем: Пушкин, храмы, Хуайхай, школа «Реми», небо 1950 года, дом дружбы 1955 года, флотилия Старка и Иоанн Шанхайский. Фильтр оставляет период, тип места и школьную тему. Булавка есть не у каждой темы. Если дома с тротуара нет, карточка всё равно в списке, а на карте точки нет.</p>
-<p class="zh answer">目录里八个题目：普希金、教堂、淮海路、雷米小学、1950年的天空、1955年的友好大厦、斯塔克舰队和上海的圣伊望。可以按年代、地点类型和课堂题目筛选。不是每个题目都有钉子。人行道上看不见房子，卡片还在名单里，地图上没有点。</p>
+<p class="ru answer">В каталоге четырнадцать тем: от Русско-Китайского банка 1902 года и консульства до храмов, Пушкина, Русского полка, кадет, оркестра Лундстрема, «Сокола», неба 1950 года и дома дружбы 1955 года. Фильтр оставляет период, тип места и школьную тему. Булавка есть не у каждой темы. Если дома с тротуара нет, карточка всё равно в списке, а на карте точки нет.</p>
+<p class="zh answer">目录里十四个题目：从1902年的华俄道胜银行和领事馆，到教堂、普希金、俄国团、军校生、伦德斯特列姆乐队、「猎鹰」、1950年的天空和1955年的友好大厦。可以按年代、地点类型和课堂题目筛选。不是每个题目都有钉子。人行道上看不见房子，卡片还在名单里，地图上没有点。</p>
 <p class="ru deck">Фильтры по периоду, типу места и школьной теме. Поиск — по названию, улице или слову в тексте.</p>
 <p class="zh deck">按年代、地点类型和课堂题目筛选。搜索名称、街名或正文里的词。</p>
 <div data-catalog>
@@ -72,6 +72,7 @@
 <p class="filter-label"><span class="ru">Период</span><span class="zh">年代</span></p>
 <div class="filters">
 <button type="button" data-period-filter="all" aria-pressed="true"><span class="ru">Все периоды</span><span class="zh">全部年代</span></button>
+<button type="button" data-period-filter="empire" aria-pressed="false"><span class="ru">До 1917</span><span class="zh">1917年以前</span></button>
 <button type="button" data-period-filter="twenties" aria-pressed="false"><span class="ru">1922–1923</span><span class="zh">1922–23</span></button>
 <button type="button" data-period-filter="emigration" aria-pressed="false"><span class="ru">1920–1940: эмиграция</span><span class="zh">1920–40年代侨民</span></button>
 <button type="button" data-period-filter="fifties" aria-pressed="false"><span class="ru">1950-е</span><span class="zh">1950年代</span></button>
@@ -88,6 +89,7 @@
 <p class="filter-label"><span class="ru">Школьная тема</span><span class="zh">课堂题目</span></p>
 <div class="filters">
 <button type="button" data-theme="all" aria-pressed="true"><span class="ru">Все места</span><span class="zh">全部地点</span></button>
+<button type="button" data-theme="empire" aria-pressed="false"><span class="ru">Российская империя в Шанхае</span><span class="zh">沙俄时期的上海</span></button>
 <button type="button" data-theme="emigration" aria-pressed="false"><span class="ru">Российская эмиграция</span><span class="zh">俄国侨民</span></button>
 <button type="button" data-theme="culture" aria-pressed="false"><span class="ru">Культура</span><span class="zh">文化</span></button>
 <button type="button" data-theme="religion" aria-pressed="false"><span class="ru">Религия</span><span class="zh">宗教</span></button>
@@ -160,6 +162,54 @@
   <p class="card-title-ru">Иоанн Шанхайский</p>
   <p class="card-text ru">Собрал детей с улиц, достроил собор на Синьлэ, устроил приют св. Тихона.</p>
   <p class="card-text zh">从街上收留孩子，盖完新乐路大堂，办了圣蒂洪孤儿院。</p>
+  <span class="card-cta"><span class="ru">Смотреть историю</span><span class="zh">阅读故事</span></span>
+</a>
+<a class="card card-bilingual" href="bank.html" data-themes="empire lesson" data-period="empire" data-kind="building">
+  <p class="meta"><span class="ru">1895–1926 · Здание · Бунд, 15, район Хуанпу</span><span class="zh">1895–1926 · 建筑 · 黄浦区中山东一路15号</span></p>
+  <p class="card-title-zh">华俄道胜银行</p>
+  <p class="card-title-ru">Русско-Китайский банк</p>
+  <p class="card-text ru">Самый русский дом на Бунде — не церковь, а банк 1902 года.</p>
+  <p class="card-text zh">外滩上最「俄国」的房子不是教堂，是1902年的银行。</p>
+  <span class="card-cta"><span class="ru">Смотреть историю</span><span class="zh">阅读故事</span></span>
+</a>
+<a class="card card-bilingual" href="konsulstvo.html" data-themes="empire religion orthodox lesson" data-period="empire" data-kind="building">
+  <p class="meta"><span class="ru">1916 — сегодня · Здание · Хуанпу, 20, район Хункоу</span><span class="zh">1916年至今 · 建筑 · 虹口区黄浦路20号</span></p>
+  <p class="card-title-zh">黄浦路20号领事馆</p>
+  <p class="card-title-ru">Консульство на Хуанпу, 20</p>
+  <p class="card-text ru">Дом 1916 года, орёл, казаки 1924-го и воскресная литургия сегодня.</p>
+  <p class="card-text zh">1916年的房子，双头鹰，1924年的哥萨克，还有今天星期天的礼拜。</p>
+  <span class="card-cta"><span class="ru">Смотреть историю</span><span class="zh">阅读故事</span></span>
+</a>
+<a class="card card-bilingual" href="polk.html" data-themes="emigration war lesson" data-period="emigration" data-kind="building">
+  <p class="meta"><span class="ru">1927–1941 · Здание и поле · Наньцзин-си, 325, бывший ипподром</span><span class="zh">1927–1941 · 建筑和场地 · 南京西路325号，原跑马厅</span></p>
+  <p class="card-title-zh">上海俄国团</p>
+  <p class="card-title-ru">Шанхайский русский полк</p>
+  <p class="card-text ru">1927 год: город позвал казаков Глебова. Им единственным платили.</p>
+  <p class="card-text zh">1927年：城市请来格列博夫的哥萨克。只有他们领薪水。</p>
+  <span class="card-cta"><span class="ru">Смотреть историю</span><span class="zh">阅读故事</span></span>
+</a>
+<a class="card card-bilingual" href="kadety.html" data-themes="emigration war lesson" data-period="twenties" data-kind="story">
+  <p class="meta"><span class="ru">1922–1924 · История без дома · Старые адреса, булавки нет</span><span class="zh">1922–1924 · 没有房子的故事 · 旧门牌，没有钉子</span></p>
+  <p class="card-title-zh">上海的俄国军校生</p>
+  <p class="card-title-ru">Кадеты в Шанхае</p>
+  <p class="card-text ru">Два кадетских корпуса на флотилии Старка. Корабль «Дыдымов» не дошёл.</p>
+  <p class="card-text zh">两个武备学校坐斯塔克的舰队来。「迪德莫夫」号没能到。</p>
+  <span class="card-cta"><span class="ru">Смотреть историю</span><span class="zh">阅读故事</span></span>
+</a>
+<a class="card card-bilingual" href="lundstrem.html" data-themes="emigration culture lesson" data-period="emigration" data-kind="building">
+  <p class="meta"><span class="ru">1936–1947 · Здание · Юйюань, 218, район Цзинъань</span><span class="zh">1936–1947 · 建筑 · 静安区愚园路218号</span></p>
+  <p class="card-title-zh">伦德斯特列姆和百乐门</p>
+  <p class="card-title-ru">Оркестр Лундстрема и «Парамаунт»</p>
+  <p class="card-text ru">Мальчик из Харбина стал королём джаза Дальнего Востока. Танцзал стоит.</p>
+  <p class="card-text zh">哈尔滨来的少年成了「远东爵士之王」。舞厅还在。</p>
+  <span class="card-cta"><span class="ru">Смотреть историю</span><span class="zh">阅读故事</span></span>
+</a>
+<a class="card card-bilingual" href="sokol.html" data-themes="emigration culture lesson" data-period="emigration" data-kind="building">
+  <p class="meta"><span class="ru">1930–1935 · Место, дома нет · Фусин, 597, Культурная площадь</span><span class="zh">1930–1935 · 地方还在，房子没了 · 复兴中路597号，文化广场</span></p>
+  <p class="card-title-zh">「俄罗斯猎鹰」和逸园</p>
+  <p class="card-title-ru">«Русский Сокол» и Канидром</p>
+  <p class="card-text ru">Русская гимнастика на стадионе для собачьих бегов. Теперь там театр.</p>
+  <p class="card-text zh">赛狗场上的俄国体操。现在那里是剧场。</p>
   <span class="card-cta"><span class="ru">Смотреть историю</span><span class="zh">阅读故事</span></span>
 </a>
 </div>

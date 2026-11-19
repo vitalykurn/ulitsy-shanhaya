@@ -15,6 +15,7 @@
 
   function markerColor(period) {
     if (period === "fifties") return "#234864";
+    if (period === "empire") return "#3f6b46";
     return "#8d4a3d";
   }
 
