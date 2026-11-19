@@ -99,7 +99,15 @@ jobs:
 
           yc --format json storage s3api list-objects-v2 \
             --bucket "$YC_BUCKET_NAME" \
-            --max-keys 10000 | jq -r '.Contents[]?.Key // empty' > /tmp/remote_files.txt || true
+            --max-keys 10000 > /tmp/remote_list.json || true
+          # yc may print keys as Contents/Key or contents/key; accept both.
+          jq -r '(.Contents // .contents // [])[] | (.Key // .key // empty)' /tmp/remote_list.json > /tmp/remote_files.txt || true
+          echo "remote objects: $(wc -l < /tmp/remote_files.txt)"
+          if [ ! -s /tmp/remote_files.txt ]; then
+            echo "remote listing is empty; first bytes:"
+            head -c 300 /tmp/remote_list.json || true
+            echo
+          fi
 
           while IFS= read -r remote_file; do
             [ -z "$remote_file" ] && continue
