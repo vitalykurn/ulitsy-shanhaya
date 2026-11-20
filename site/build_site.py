@@ -405,7 +405,7 @@ def mini_map_html(credits):
   <p class="map-preview-links"><a href="karta.html">{bi_span("Открыть полную карту", "打开完整地图")}</a> · <a href="mesta.html">{bi_span("Все места и фильтры", "全部地点和筛选")}</a> · <a href="marshruty.html">{bi_span("Проложить маршрут", "选一条路线")}</a></p>
 </section>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/map.js?v=20261119"></script>"""
+<script src="js/map.js?v=20261120"></script>"""
 
 
 def steps_html():
@@ -573,7 +573,7 @@ def map_html(credits):
   <p><a href="nebo.html">{bi_span("Открыть 1950", "打开1950")}</a></p>
 </aside>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/map.js?v=20261119"></script>"""
+<script src="js/map.js?v=20261120"></script>"""
 
 
 def facts_html(items):
@@ -825,7 +825,7 @@ def render(page, credits):
     leaflet = bool(page.get("map") or page.get("mini_map") or spot_leaflet)
     scripts = ""
     if spot_leaflet and not page.get("map") and not page.get("mini_map"):
-        scripts = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/map.js?v=20261119"></script>'
+        scripts = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/map.js?v=20261120"></script>'
     write_page(
         page["file"], page["h1_ru"], page["h1_zh"], "\n".join(chunks),
         credits=credits, photos=page.get("photos"),

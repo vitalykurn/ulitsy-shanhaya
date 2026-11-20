@@ -490,11 +490,12 @@ PINS = [
 
 # Used if geocoding did not return a point inside Shanghai.
 FALLBACK_COORDS = {
-    "pushkin": (31.20985, 121.45595),
+    # Точки pushkin, huaihai, vystavka уточнены по OpenStreetMap (WGS-84) 20 ноября 2026: прежние были на 300–850 м в стороне.
+    "pushkin": (31.2107632, 121.4471703),  # OSM: 普希金雕像, 汾阳路
     "sobor": (31.21655, 121.45535),
     "nikolsky": (31.219097, 121.4615),
-    "huaihai": (31.21970, 121.45980),
-    "vystavka": (31.22855, 121.44955),
+    "huaihai": (31.2182811, 121.4536817),  # OSM: 淮海中路陕西南路
+    "vystavka": (31.2261043, 121.4480493),  # OSM: 上海展览中心, 延安中路1000号
     # Nominatim по «200 Yongkang Road» вернул улицу, не дом.
     # Точка — школа «上海市第二中学» на 永康路, Сюйхой (OSM way 789789449).
     "remi": (31.2122911, 121.4507761),
