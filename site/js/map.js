@@ -103,7 +103,7 @@
   }
 
   if (typeof L !== "undefined") {
-    map = L.map(el, { scrollWheelZoom: false });
+    map = L.map(el, { scrollWheelZoom: false, attributionControl: false });
     var gaode = L.tileLayer("https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}", {
       subdomains: "1234",
       maxZoom: 18,
