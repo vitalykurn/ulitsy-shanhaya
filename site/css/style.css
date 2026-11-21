@@ -508,3 +508,30 @@ footer div {
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 10pt; }
   .card { break-inside: avoid; }
 }
+
+/* Пешие прогулки */
+.walk-map { height: 440px; }
+.walk-map--all { height: 480px; }
+.walk-canvas { height: 100%; width: 100%; }
+.walk-num span {
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 50%;
+  color: #fff; font: 700 13px/1 system-ui, sans-serif;
+  border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+.walk-stops { list-style: none; padding: 0; margin: 0 0 16px; }
+.walk-stop { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.walk-stop h3 { margin: 2px 0 6px; }
+.walk-stop p { margin: 0 0 6px; }
+.walk-n {
+  flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%; color: #fff; font-weight: 700;
+}
+.walk-legs { color: var(--muted); font-size: 14px; }
+.walk-card h3 { margin-top: 0; }
+@media (max-width: 760px) {
+  .walk-map, .walk-map--all { height: 60vh; min-height: 300px; }
+}
+@media print {
+  .walk-map { height: 360px; }
+}

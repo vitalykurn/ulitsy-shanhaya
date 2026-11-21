@@ -266,7 +266,7 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
   <meta property="og:image" content="{esc(image or ('https://' + content.DOMAIN + '/img/avatar.jpg'))}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="img/avatar.jpg">
-  <link rel="stylesheet" href="css/style.css?v=20261112">{leaflet_css}
+  <link rel="stylesheet" href="css/style.css?v=20261121">{leaflet_css}
   {ld}
 </head>
 <body data-lang="ru">
@@ -898,6 +898,8 @@ def route_page(route):
 
 
 def routes_index():
+    credits = load_credits()
+    geo = walks_geo()
     cards = []
     for route in content.ROUTES:
         cards.append(
@@ -911,16 +913,18 @@ def routes_index():
     body = "\n".join([
         f"<h1>{bi_span('Маршруты', '路线')}</h1>",
         answer_p("marshruty.html"),
+        walks_section(geo, credits),
+        f'<h2>{bi_span("Листы для урока", "课堂纸")}</h2>',
         both(
-            "Шесть листов из историй, которые уже написаны. Это не отчёт о пройденных километрах: шаги я ещё не мерила.",
-            "六张纸来自已经写好的故事。这不是走过多少公里的报告：步数我还没量。",
+            "Шесть листов, по одной истории на лист. Вопрос до прогулки, задание на месте и вопрос после.",
+            "六张纸，一个故事一张。出门前的问题、现场任务和回来后的问题。",
             "p",
             "deck",
         ),
         '<div class="cards">\n' + "\n".join(cards) + "\n</div>",
         f'<p><a href="urok.html">{bi_span("Общий лист для урока", "总的课堂纸")}</a></p>',
     ])
-    write_page("marshruty.html", "Маршруты", "路线", body, wide=True)
+    write_page("marshruty.html", "Маршруты", "路线", body, wide=True, leaflet=True, scripts=WALK_SCRIPTS)
 
 
 def catalog_page():
@@ -1101,8 +1105,11 @@ def llms_txt():
         titles[page["file"]] = page["h1_ru"]
     for route in content.ROUTES:
         titles[route["file"]] = route["title_ru"]
+    for walk in content.WALKS:
+        titles[walk["file"]] = "Прогулка: " + walk["title_ru"]
     order = [page["file"] for page in content.PAGES]
     order += ["marshruty.html", "mesta.html", "urok.html", "russkiy-sled.html", "proekt.html"]
+    order += [walk["file"] for walk in content.WALKS]
     order += [route["file"] for route in content.ROUTES]
     lines = [
         f"# {content.SITE_NAME_RU}",
@@ -1140,6 +1147,7 @@ def llms_txt():
 def write_seo_files():
     pages = [page["file"] for page in content.PAGES]
     pages += [route["file"] for route in content.ROUTES]
+    pages += [walk["file"] for walk in content.WALKS]
     pages += ["marshruty.html", "mesta.html", "urok.html", "russkiy-sled.html", "proekt.html"]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for filename in pages:
@@ -1180,6 +1188,12 @@ def write_text_bundle():
         lines.append(route["before_ru"])
         lines.append(route["there_ru"])
         lines.append(route["after_ru"])
+    for walk in content.WALKS:
+        lines.append("## Прогулка: " + walk["title_ru"])
+        lines.append(walk["deck_ru"])
+        for stop in walk["stops"]:
+            lines.append(stop["title_ru"] + ". " + stop["look_ru"])
+        lines.append(walk["note_ru"])
     lines.append("## " + content.LESSON["h1_ru"])
     lines.append(content.LESSON["goal_ru"])
     for title_ru, _title_zh, paras_ru, _paras_zh in content.PROJECT:
@@ -1195,6 +1209,180 @@ def write_text_bundle():
     (bundle / "site-ru.txt").write_text("\n\n".join(lines), encoding="utf-8")
 
 
+# ---------------------------------------------------------------------------
+# Пешие прогулки
+
+WALKS_GEO_FILE = ROOT / "_walks_geo.json"
+
+
+def walks_geo():
+    return json.loads(WALKS_GEO_FILE.read_text(encoding="utf-8"))
+
+
+def walk_data(walk, geo, credits):
+    pts = geo["points"]
+    stops = []
+    for n, stop in enumerate(walk["stops"], start=1):
+        key = stop["point"]
+        lat, lon = coord_for(key, credits) if key in content.FALLBACK_COORDS else pts[key]
+        stops.append({"n": n, "lat": lat, "lon": lon, "title": stop["title_ru"], "href": stop["file"], "more": "Открыть историю"})
+    ends = []
+    for key in (walk["start"], walk["finish"]):
+        if key in content.WALK_STATIONS:
+            lat, lon = pts[key]
+            ends.append({"lat": lat, "lon": lon, "label": content.WALK_STATIONS[key][0]})
+    return {
+        "title": walk["title_ru"],
+        "href": walk["file"],
+        "color": walk["color"],
+        "path": geo["walks"][walk["id"]]["path"],
+        "stops": stops,
+        "ends": ends,
+    }
+
+
+def walk_map_html(data_list, cls=""):
+    data = escape(json.dumps(data_list, ensure_ascii=False), quote=True)
+    return f'<div class="map-wrap walk-map {cls}"><div class="walk-canvas" data-walks="{data}" role="region" aria-label="Карта прогулки"></div></div>'
+
+
+def km(m):
+    return f"{m / 1000:.1f}".replace(".", ",")
+
+
+def km_zh(m):
+    return f"{m / 1000:.1f}"
+
+
+def walk_minutes(m):
+    return int(round(m / 75.0 / 5.0) * 5)
+
+
+def walk_end_label(key, lang):
+    if key in content.WALK_STATIONS:
+        return content.WALK_STATIONS[key][0 if lang == "ru" else 1]
+    stop = next(s for w in content.WALKS for s in w["stops"] if s["point"] == key)
+    return stop["title_ru"] if lang == "ru" else stop["title_zh"]
+
+
+WALK_SCRIPTS = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/walks.js?v=20261121c"></script>'
+
+
+def walk_page(walk, geo, credits):
+    g = geo["walks"][walk["id"]]
+    meters = g["m"]
+    mins = walk_minutes(meters)
+    start_ru, start_zh = walk_end_label(walk["start"], "ru"), walk_end_label(walk["start"], "zh")
+    fin_ru, fin_zh = walk_end_label(walk["finish"], "ru"), walk_end_label(walk["finish"], "zh")
+    stops = []
+    facts = []
+    seen = set()
+    for n, stop in enumerate(walk["stops"], start=1):
+        stops.append(
+            f"""<li class="walk-stop">
+  <span class="walk-n" style="background:{walk['color']}">{n}</span>
+  <div>
+  <h3>{bi_span(stop["title_ru"], stop["title_zh"])}</h3>
+  <p class="ru">{esc(stop["look_ru"])}</p>
+  <p class="zh">{esc(stop["look_zh"])}</p>
+  <p><a href="{esc(stop['file'])}">{bi_span("Вся история →", "整个故事 →")}</a></p>
+  </div>
+</li>"""
+        )
+        for fact in facts_for(stop["file"]):
+            if fact["url"] not in seen:
+                facts.append(fact)
+                seen.add(fact["url"])
+    legs = []
+    names = {walk["start"]: (start_ru, start_zh), walk["finish"]: (fin_ru, fin_zh)}
+    for s in walk["stops"]:
+        names[s["point"]] = (s["title_ru"], s["title_zh"])
+    acc, origin = 0, None
+    for leg in g["legs"]:
+        if origin is None:
+            origin = leg["from"]
+        acc += leg["m"]
+        if leg["to"].startswith("via_"):
+            continue
+        a, b = names.get(origin), names.get(leg["to"])
+        if a and b:
+            legs.append("<li>" + bi_span(f"{a[0]} → {b[0]}: {acc} м", f"{a[1]} → {b[1]}：{acc}米") + "</li>")
+        acc, origin = 0, None
+    other = [w for w in content.WALKS if w["id"] != walk["id"]]
+    body = "\n".join([
+        f"<h1>{bi_span(walk['title_ru'], walk['title_zh'])}</h1>",
+        answer_p(walk["file"]),
+        both(walk["deck_ru"], walk["deck_zh"], "p", "deck"),
+        '<ul class="sheet-meta walk-meta">',
+        f"<li>{bi_span('Длина: около ' + km(meters) + ' км', '长度：约' + km_zh(meters) + '公里')}</li>",
+        f"<li>{bi_span('Ходьбы без остановок: около ' + str(mins) + ' минут', '不停地走：约' + str(mins) + '分钟')}</li>",
+        f"<li>{bi_span('Старт: ' + start_ru, '起点：' + start_zh)}</li>",
+        f"<li>{bi_span('Финиш: ' + fin_ru, '终点：' + fin_zh)}</li>",
+        f"<li>{bi_span('Остановок: ' + str(len(walk['stops'])), '站数：' + str(len(walk['stops'])))}</li>",
+        "</ul>",
+        walk_map_html([walk_data(walk, geo, credits)]),
+        f'<p class="meta">{bi_span("Цифры на карте — остановки. Белые кружки — метро на старте и финише. Линия проложена по пешеходным дорожкам OpenStreetMap.", "地图上的数字是站点。白圈是起点和终点的地铁站。线是按OpenStreetMap的步行道画的。")}</p>',
+        f'<h2>{bi_span("Остановки", "站点")}</h2>',
+        '<ol class="walk-stops">\n' + "\n".join(stops) + "\n</ol>",
+        f'<h2>{bi_span("Перед выходом", "出门前")}</h2>',
+        both(walk["note_ru"], walk["note_zh"]),
+        both(
+            "Длину я считал по карте, не шагомером. Минуты — при обычном шаге, без остановок, кофе и фотографий. Во дворы и внутрь домов маршрут не ведёт: всё смотрится с тротуара.",
+            "长度是按地图算的，不是计步器量的。分钟数按平常的步子算，不算停下、喝咖啡和拍照。路线不进院子、不进房子：都在人行道上看。",
+        ),
+        '<ul class="walk-legs">\n' + "\n".join(legs) + "\n</ul>",
+        f'<h2>{bi_span("Источники", "出处")}</h2>',
+        facts_html(facts),
+        f'<p class="noprint"><button type="button" data-print>{bi_span("Распечатать прогулку", "打印路线")}</button></p>',
+        "<p>" + bi_span("Другие прогулки: ", "别的路线：") + " · ".join(
+            f'<a href="{esc(w["file"])}">{bi_span(w["title_ru"], w["title_zh"])}</a>' for w in other
+        ) + f' · <a href="marshruty.html">{bi_span("Все маршруты", "全部路线")}</a></p>',
+        f'<p class="updated">{bi_span("Прогулка добавлена 21 ноября 2026.", "路线2026年11月21日加上。")}</p>',
+    ])
+    desc_ru, _desc_zh = descriptions(walk["file"], walk["title_ru"], walk["title_zh"])
+    ld = json_ld({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": walk["title_ru"],
+        "description": desc_ru,
+        "inLanguage": ["ru", "zh"],
+        "url": page_url(walk["file"]),
+        "dateModified": "2026-11-21",
+        "author": {"@type": "Person", "name": AUTHOR_RU},
+    })
+    first = walk["stops"][0]["file"]
+    page = next((item for item in content.PAGES if item["file"] == first), {})
+    write_page(walk["file"], walk["title_ru"], walk["title_zh"], body, credits=credits, photos=page.get("photos"),
+               leaflet=True, scripts=WALK_SCRIPTS, ld=ld)
+
+
+def walks_section(geo, credits):
+    cards = []
+    for walk in content.WALKS:
+        m = geo["walks"][walk["id"]]["m"]
+        names_ru = " → ".join(s["title_ru"].split(",")[0] for s in walk["stops"])
+        names_zh = " → ".join(s["title_zh"].split("，")[0] for s in walk["stops"])
+        cards.append(
+            f"""<a class="card walk-card" href="{esc(walk['file'])}" style="border-top:4px solid {walk['color']}">
+  <h3>{bi_span(walk['title_ru'], walk['title_zh'])}</h3>
+  <p class="meta">{bi_span(f"около {km(m)} км · {walk_minutes(m)} минут ходьбы · остановок: {len(walk['stops'])}", f"约{km_zh(m)}公里 · 步行约{walk_minutes(m)}分钟 · {len(walk['stops'])}站")}</p>
+  <p class="ru">{esc(names_ru)}</p>
+  <p class="zh">{esc(names_zh)}</p>
+</a>"""
+        )
+    return "\n".join([
+        f'<h2>{bi_span("Пешие прогулки по городу", "城里的步行路线")}</h2>',
+        both(
+            "Три прогулки из мест, которые уже есть на сайте. Каждую можно пройти за час-полтора и начать у метро.",
+            "三条路线，用的都是网站上已有的地点。每条一个到一个半小时，从地铁站出发。",
+            "p",
+            "deck",
+        ),
+        walk_map_html([walk_data(w, geo, credits) for w in content.WALKS], "walk-map--all"),
+        '<div class="cards">\n' + "\n".join(cards) + "\n</div>",
+    ])
+
+
 def main():
     credits = load_credits()
     for page in content.PAGES:
@@ -1202,6 +1390,9 @@ def main():
     routes_index()
     for route in content.ROUTES:
         route_page(route)
+    geo = walks_geo()
+    for walk in content.WALKS:
+        walk_page(walk, geo, credits)
     catalog_page()
     lesson_page()
     project_page()
