@@ -12,10 +12,6 @@ ROOT = Path(__file__).resolve().parent
 CREDITS_PATH = ROOT / "credits.json"
 
 
-AUTHOR_RU = "Виталий Курносенко"
-AUTHOR_ZH = "维塔利·库尔诺先科"
-
-
 def esc(value):
     return escape("" if value is None else str(value), quote=True)
 
@@ -299,8 +295,8 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
         {mark}
         <span>
           <strong>{bi_span(content.SITE_NAME_RU, content.SITE_NAME_ZH)}</strong>
-          <small class="ru">Виталий Курносенко, Шанхай</small>
-          <small class="zh">维塔利·库尔诺先科，上海</small>
+          <small class="ru">Шанхай</small>
+          <small class="zh">上海</small>
         </span>
       </a>
       <div class="tools">
@@ -402,7 +398,6 @@ def author_section(page):
         f'<h2>{bi_span("Почему я веду этот проект", "我为什么做这个项目")}</h2>',
         f'<blockquote class="hero-quote">{bi_span(page["quote_ru"], page["quote_zh"])}</blockquote>',
         '<div class="author-card">',
-        f'<p><strong>{bi_span(AUTHOR_RU, AUTHOR_ZH)}</strong></p>',
         f'<p class="meta">{bi_span("Шанхай · авторский проект и видео · с 2023 года", "上海 · 作者项目和视频 · 从2023年")}</p>',
         f'<p class="meta">{bi_span("Языки: русский и китайский", "语言：俄文和中文")}</p>',
         "</div>",
@@ -410,8 +405,7 @@ def author_section(page):
         both(page["class_ru"], page["class_zh"]),
         paras(page.get("paras_ru") or [], "ru"),
         paras(page.get("paras_zh") or [], "zh"),
-        f'<p><a href="ya.html">{bi_span("Подробнее об авторе", "更多关于作者")}</a> · '
-        f'<a href="proekt.html">{bi_span("Страница для жюри", "给评委的项目页")}</a></p>',
+        f'<p><a href="proekt.html">{bi_span("Страница для жюри", "给评委的项目页")}</a></p>',
         "</section>",
     ])
 
@@ -704,7 +698,6 @@ def article_ld(filename, title_ru, desc_ru, credits):
         "inLanguage": ["ru", "zh"],
         "url": page_url(filename),
         "dateModified": "2026-11-19",
-        "author": {"@type": "Person", "name": AUTHOR_RU},
     }
     geos = []
     for pin in content.PINS:
@@ -848,7 +841,6 @@ def render(page, credits):
             "url": page_url("index.html"),
             "inLanguage": ["ru", "zh"],
             "description": desc_ru,
-            "author": {"@type": "Person", "name": AUTHOR_RU},
         }) + faq_ld()
     else:
         ld = article_ld(page["file"], page["h1_ru"], desc_ru, credits) + extra_ld
@@ -921,7 +913,6 @@ def route_page(route):
         "inLanguage": ["ru", "zh"],
         "url": page_url(route["file"]),
         "dateModified": "2026-11-19",
-        "author": {"@type": "Person", "name": AUTHOR_RU},
     })
     first = place_by_id(route["stops"][0])
     page = next((item for item in content.PAGES if item["file"] == first["file"]), {})
@@ -1149,7 +1140,7 @@ def llms_txt():
         "",
         f"Сайт: {page_url('index.html')}",
         "Языки: русский и китайский на одной странице. Китайский включается кнопкой, отдельного адреса нет.",
-        "Автор: Виталий Курносенко, живёт и работает в Шанхае больше десяти лет. Авторский проект, не путеводитель.",
+        "Авторский проект, не путеводитель.",
         "Конкурсная работа: видео о русских храмах Шанхая для конкурса «Русский след», номинация «Архитектурное наследие».",
         "Булавка только у дома, который видно с тротуара. У 1950 года, флотилии Старка и приюта Иоанна точки нет.",
         "",
@@ -1378,7 +1369,6 @@ def walk_page(walk, geo, credits):
         "inLanguage": ["ru", "zh"],
         "url": page_url(walk["file"]),
         "dateModified": "2026-11-21",
-        "author": {"@type": "Person", "name": AUTHOR_RU},
     })
     first = walk["stops"][0]["file"]
     page = next((item for item in content.PAGES if item["file"] == first), {})
