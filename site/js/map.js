@@ -72,7 +72,8 @@
       markers = [];
       points.forEach(function (p) {
         if (typeof p.lat !== "number" || typeof p.lon !== "number") return;
-        var html = "<b><span class=\"ru\">" + p.title_ru + "</span><span class=\"zh\">" + p.title_zh + "</span></b><br>" +
+        var html = (p.img ? "<a class=\"pop-photo\" href=\"" + p.href + "\"><img src=\"" + p.img + "\" alt=\"\" loading=\"lazy\"></a>" : "") +
+          "<b><span class=\"ru\">" + p.title_ru + "</span><span class=\"zh\">" + p.title_zh + "</span></b><br>" +
           "<span class=\"ru\">" + p.addr_ru + "</span><span class=\"zh\">" + p.addr_zh + "</span><br>" +
           "<a href=\"" + p.href + "\"><span class=\"ru\">Открыть историю</span><span class=\"zh\">打开故事</span></a>";
         var icon = L.divIcon({
@@ -81,7 +82,7 @@
           iconSize: [16, 16],
           iconAnchor: [8, 8]
         });
-        var marker = L.marker(pos(p), { icon: icon }).addTo(map).bindPopup(html);
+        var marker = L.marker(pos(p), { icon: icon }).addTo(map).bindPopup(html, { maxWidth: 240, minWidth: 200 });
         markers.push({ point: p, marker: marker });
       });
       apply();

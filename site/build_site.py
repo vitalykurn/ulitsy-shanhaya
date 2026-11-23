@@ -189,6 +189,26 @@ def breadcrumbs_html(items):
     return "".join(parts)
 
 
+def popup_photo(key, credits):
+    """Маленькая копия фото для всплывающего окна на карте: img/pop/<key>.jpg, до 480 px по большей стороне."""
+    photo = (credits.get("photos") or {}).get(key) or {}
+    src = ROOT / (photo.get("file") or f"img/{key}.jpg")
+    if not src.exists():
+        return ""
+    out = ROOT / "img" / "pop" / f"{key}.jpg"
+    if not out.exists() or out.stat().st_mtime < src.stat().st_mtime:
+        try:
+            from PIL import Image
+        except ImportError:
+            return src.relative_to(ROOT).as_posix()
+        out.parent.mkdir(parents=True, exist_ok=True)
+        with Image.open(src) as im:
+            im = im.convert("RGB")
+            im.thumbnail((480, 480))
+            im.save(out, "JPEG", quality=78, optimize=True, progressive=True)
+    return out.relative_to(ROOT).as_posix()
+
+
 def map_points(credits):
     points = []
     for pin in content.PINS:
@@ -204,6 +224,7 @@ def map_points(credits):
             "addr_zh": pin["addr_zh"],
             "themes": themes,
             "period": pin.get("period") or "emigration",
+            "img": popup_photo(pin["key"], credits),
         })
     return points
 
@@ -266,7 +287,7 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
   <meta property="og:image" content="{esc(image or ('https://' + content.DOMAIN + '/img/avatar.jpg'))}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="img/avatar.jpg">
-  <link rel="stylesheet" href="css/style.css?v=20261121">{leaflet_css}
+  <link rel="stylesheet" href="css/style.css?v=20261124">{leaflet_css}
   {ld}
 </head>
 <body data-lang="ru">
@@ -396,17 +417,25 @@ def author_section(page):
 
 
 def mini_map_html(credits):
-    data = escape(json.dumps(map_points(credits), ensure_ascii=False), quote=True)
+    geo = walks_geo()
+    legend = []
+    for walk in content.WALKS:
+        m = geo["walks"][walk["id"]]["m"]
+        legend.append(
+            f'<li><span class="walk-swatch" style="background:{walk["color"]}"></span>'
+            f'<a href="{esc(walk["file"])}">{bi_span(walk["title_ru"], walk["title_zh"])}</a> '
+            f'<span class="meta">{bi_span(f"около {km(m)} км, {walk_minutes(m)} минут", f"约{km_zh(m)}公里，{walk_minutes(m)}分钟")}</span></li>'
+        )
     return f"""<section class="map-preview wide-inner" aria-labelledby="map-preview-title">
-  <h2 id="map-preview-title">{bi_span("На карте Шанхая", "在上海地图上")}</h2>
-  <p class="meta">{bi_span("Одиннадцать булавок — места, которые видно с тротуара. Остальные истории в каталоге «Места».", "十一个钉子——从人行道看得见。别的故事在「地点」目录里。")}</p>
-  <div class="map-wrap map-wrap--preview"><div id="map-home" style="height:100%;width:100%" data-points="{data}" role="region" aria-label="Превью карты"></div></div>
-  <p class="map-legend">{bi_span("Зелёные маркеры — Российская империя, до 1917. Красные — 1920–40-е и эмиграция. Синий — 1950-е.", "绿钉：1917年以前的沙俄时期。红钉：1920–40年代和侨民。蓝钉：1950年代。")}</p>
-  <p class="map-preview-links"><a href="karta.html">{bi_span("Открыть полную карту", "打开完整地图")}</a> · <a href="mesta.html">{bi_span("Все места и фильтры", "全部地点和筛选")}</a> · <a href="marshruty.html">{bi_span("Проложить маршрут", "选一条路线")}</a></p>
+  <h2 id="map-preview-title">{bi_span("Пешие прогулки по Шанхаю", "上海步行路线")}</h2>
+  <p class="meta">{bi_span("Три маршрута от метро до метро. Цифры — остановки, нажмите, чтобы открыть историю места.", "三条路线，从地铁站到地铁站。数字是站点，点一下打开那个地方的故事。")}</p>
+  {walk_map_html([walk_data(w, geo, credits) for w in content.WALKS], "walk-map--all")}
+  <ul class="walk-legend">
+{chr(10).join(legend)}
+  </ul>
+  <p class="map-preview-links"><a href="marshruty.html">{bi_span("Все маршруты", "全部路线")}</a> · <a href="karta.html">{bi_span("Карта всех мест", "全部地点地图")}</a> · <a href="mesta.html">{bi_span("Все места и фильтры", "全部地点和筛选")}</a></p>
 </section>
-<script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/basemap.js?v=20261123"></script>
-<script src="js/map.js?v=20261123"></script>"""
+{WALK_SCRIPTS}"""
 
 
 def steps_html():
@@ -574,8 +603,8 @@ def map_html(credits):
   <p><a href="nebo.html">{bi_span("Открыть 1950", "打开1950")}</a></p>
 </aside>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/basemap.js?v=20261123"></script>
-<script src="js/map.js?v=20261123"></script>"""
+<script src="js/basemap.js?v=20261124"></script>
+<script src="js/map.js?v=20261124"></script>"""
 
 
 def facts_html(items):
@@ -827,7 +856,7 @@ def render(page, credits):
     leaflet = bool(page.get("map") or page.get("mini_map") or spot_leaflet)
     scripts = ""
     if spot_leaflet and not page.get("map") and not page.get("mini_map"):
-        scripts = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/basemap.js?v=20261123"></script>\n<script src="js/map.js?v=20261123"></script>'
+        scripts = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/basemap.js?v=20261124"></script>\n<script src="js/map.js?v=20261124"></script>'
     write_page(
         page["file"], page["h1_ru"], page["h1_zh"], "\n".join(chunks),
         credits=credits, photos=page.get("photos"),
@@ -1227,7 +1256,7 @@ def walk_data(walk, geo, credits):
     for n, stop in enumerate(walk["stops"], start=1):
         key = stop["point"]
         lat, lon = coord_for(key, credits) if key in content.FALLBACK_COORDS else pts[key]
-        stops.append({"n": n, "lat": lat, "lon": lon, "title_ru": stop["title_ru"], "title_zh": stop["title_zh"], "href": stop["file"]})
+        stops.append({"n": n, "lat": lat, "lon": lon, "img": popup_photo(key, credits), "title_ru": stop["title_ru"], "title_zh": stop["title_zh"], "href": stop["file"]})
     ends = []
     for key in (walk["start"], walk["finish"]):
         if key in content.WALK_STATIONS:
@@ -1266,7 +1295,7 @@ def walk_end_label(key, lang):
     return stop["title_ru"] if lang == "ru" else stop["title_zh"]
 
 
-WALK_SCRIPTS = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/basemap.js?v=20261123"></script>\n<script src="js/walks.js?v=20261123"></script>'
+WALK_SCRIPTS = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/basemap.js?v=20261124"></script>\n<script src="js/walks.js?v=20261124"></script>'
 
 
 def walk_page(walk, geo, credits):

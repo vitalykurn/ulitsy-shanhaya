@@ -41,9 +41,10 @@
             iconSize: [26, 26],
             iconAnchor: [13, 13]
           });
-          var html = "<b>" + s.n + ". " + label(s, "title") + "</b><br><a href=\"" + s.href + "\">" +
+          var html = (s.img ? "<a class=\"pop-photo\" href=\"" + s.href + "\"><img src=\"" + s.img + "\" alt=\"\" loading=\"lazy\"></a>" : "") +
+            "<b>" + s.n + ". " + label(s, "title") + "</b><br><a href=\"" + s.href + "\">" +
             "<span class=\"ru\">Открыть историю</span><span class=\"zh\">打开故事</span></a>";
-          L.marker(p([s.lat, s.lon]), { icon: icon }).addTo(map).bindPopup(html);
+          L.marker(p([s.lat, s.lon]), { icon: icon }).addTo(map).bindPopup(html, { maxWidth: 240, minWidth: 200 });
         });
       });
       fit();

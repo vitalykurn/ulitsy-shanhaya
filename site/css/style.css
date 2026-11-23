@@ -535,3 +535,9 @@ footer div {
 @media print {
   .walk-map { height: 360px; }
 }
+
+.walk-legend { list-style: none; padding: 0; margin: .75rem 0 0; display: grid; gap: .35rem; }
+.walk-legend li { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
+.walk-swatch { display: inline-block; width: 1.4rem; height: 5px; border-radius: 3px; flex: none; transform: translateY(-2px); }
+.pop-photo { display: block; margin: -2px 0 .45rem; }
+.pop-photo img { display: block; width: 100%; height: 130px; object-fit: cover; border-radius: 4px; background: var(--line); }
