@@ -316,7 +316,7 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
     </div>
   </footer>
   <nav class="dock" aria-label="Короткие разделы">{dock(filename)}</nav>
-  <script src="js/lang.js"></script>
+  <script src="js/lang.js?v=20261123"></script>
   <script src="js/nav.js"></script>
   {scripts}
 </body>
@@ -405,7 +405,8 @@ def mini_map_html(credits):
   <p class="map-preview-links"><a href="karta.html">{bi_span("Открыть полную карту", "打开完整地图")}</a> · <a href="mesta.html">{bi_span("Все места и фильтры", "全部地点和筛选")}</a> · <a href="marshruty.html">{bi_span("Проложить маршрут", "选一条路线")}</a></p>
 </section>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/map.js?v=20261121"></script>"""
+<script src="js/basemap.js?v=20261123"></script>
+<script src="js/map.js?v=20261123"></script>"""
 
 
 def steps_html():
@@ -573,7 +574,8 @@ def map_html(credits):
   <p><a href="nebo.html">{bi_span("Открыть 1950", "打开1950")}</a></p>
 </aside>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/map.js?v=20261121"></script>"""
+<script src="js/basemap.js?v=20261123"></script>
+<script src="js/map.js?v=20261123"></script>"""
 
 
 def facts_html(items):
@@ -825,7 +827,7 @@ def render(page, credits):
     leaflet = bool(page.get("map") or page.get("mini_map") or spot_leaflet)
     scripts = ""
     if spot_leaflet and not page.get("map") and not page.get("mini_map"):
-        scripts = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/map.js?v=20261121"></script>'
+        scripts = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/basemap.js?v=20261123"></script>\n<script src="js/map.js?v=20261123"></script>'
     write_page(
         page["file"], page["h1_ru"], page["h1_zh"], "\n".join(chunks),
         credits=credits, photos=page.get("photos"),
@@ -1225,14 +1227,13 @@ def walk_data(walk, geo, credits):
     for n, stop in enumerate(walk["stops"], start=1):
         key = stop["point"]
         lat, lon = coord_for(key, credits) if key in content.FALLBACK_COORDS else pts[key]
-        stops.append({"n": n, "lat": lat, "lon": lon, "title": stop["title_ru"], "href": stop["file"], "more": "Открыть историю"})
+        stops.append({"n": n, "lat": lat, "lon": lon, "title_ru": stop["title_ru"], "title_zh": stop["title_zh"], "href": stop["file"]})
     ends = []
     for key in (walk["start"], walk["finish"]):
         if key in content.WALK_STATIONS:
             lat, lon = pts[key]
-            ends.append({"lat": lat, "lon": lon, "label": content.WALK_STATIONS[key][0]})
+            ends.append({"lat": lat, "lon": lon, "label_ru": content.WALK_STATIONS[key][0], "label_zh": content.WALK_STATIONS[key][1]})
     return {
-        "title": walk["title_ru"],
         "href": walk["file"],
         "color": walk["color"],
         "path": geo["walks"][walk["id"]]["path"],
@@ -1265,7 +1266,7 @@ def walk_end_label(key, lang):
     return stop["title_ru"] if lang == "ru" else stop["title_zh"]
 
 
-WALK_SCRIPTS = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/walks.js?v=20261121c"></script>'
+WALK_SCRIPTS = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/basemap.js?v=20261123"></script>\n<script src="js/walks.js?v=20261123"></script>'
 
 
 def walk_page(walk, geo, credits):

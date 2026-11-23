@@ -16,6 +16,7 @@
       img.alt = img.getAttribute(lang === "zh" ? "data-alt-zh" : "data-alt-ru") || "";
     });
     try { localStorage.setItem(key, lang); } catch (e) {}
+    try { document.dispatchEvent(new CustomEvent("ulitsy:lang", { detail: lang })); } catch (e) {}
   }
 
   apply(saved);
