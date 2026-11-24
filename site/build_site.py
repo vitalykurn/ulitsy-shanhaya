@@ -322,7 +322,6 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
         <a href="{esc(content.VK_COMMUNITY)}">{bi_span("ВКонтакте", "VK")}</a>
         <a href="{esc(content.TG_CHANNEL)}">Telegram</a>{max_head}
         <a href="karta.html">{bi_span("Карта", "地图")}</a>
-        <a href="russkiy-sled.html">{bi_span("Русский след", "俄罗斯足迹")}</a>
         <a href="proekt.html">{bi_span("Проект", "项目")}</a>
         <a href="istochniki.html">{bi_span("Откуда", "出处")}</a>
         <a href="llms.txt">llms.txt</a>
@@ -402,10 +401,9 @@ def author_section(page):
         f'<p class="meta">{bi_span("Языки: русский и китайский", "语言：俄文和中文")}</p>',
         "</div>",
         both(page["who_ru"], page["who_zh"], "p", "who"),
-        both(page["class_ru"], page["class_zh"]),
         paras(page.get("paras_ru") or [], "ru"),
         paras(page.get("paras_zh") or [], "zh"),
-        f'<p><a href="proekt.html">{bi_span("Страница для жюри", "给评委的项目页")}</a></p>',
+        f'<p><a href="proekt.html">{bi_span("О проекте", "关于项目")}</a></p>',
         "</section>",
     ])
 
@@ -1035,8 +1033,8 @@ def project_page():
         f"<h1>{bi_span('Проект', '项目')}</h1>",
         answer_p("proekt.html"),
         both(
-            "Эта страница для жюри, читателя и СМИ: что сделано, чего нет, и как проверяются факты.",
-            "这一页给评委、读者和媒体：已经做了什么、还没有什么、事实怎么核对。",
+            "Эта страница для читателя и СМИ: что сделано, чего нет, и как проверяются факты.",
+            "这一页给读者和媒体：已经做了什么、还没有什么、事实怎么核对。",
             "p",
             "deck",
         ),
@@ -1054,7 +1052,6 @@ def project_page():
         f'<li><a href="mesta.html">{bi_span("Места", "地点")}</a></li>\n'
         f'<li><a href="marshruty.html">{bi_span("Маршруты", "路线")}</a></li>\n'
         f'<li><a href="urok.html">{bi_span("Для урока", "课堂")}</a></li>\n'
-        f'<li><a href="russkiy-sled.html">{bi_span("Видео для «Русского следа»", "「俄罗斯足迹」的视频")}</a></li>\n'
         f'<li><a href="istochniki.html#proverka">{bi_span("Как я проверяю", "我怎么核对")}</a></li>\n'
         f'<li><a href="{esc(content.VK_COMMUNITY)}">VK</a></li>\n'
         f'<li><a href="{esc(content.TG_CHANNEL)}">Telegram</a></li>\n'
@@ -1067,28 +1064,6 @@ def project_page():
     ))
     parts.append(f'<p class="updated">{bi_span(content.UPDATED_RU, content.UPDATED_ZH)}</p>')
     write_page("proekt.html", "Проект", "项目", "\n".join(parts))
-
-
-def konkurs_page():
-    data = content.KONKURS
-    parts = [
-        f"<h1>{bi_span(data['h1_ru'], data['h1_zh'])}</h1>",
-        answer_p(data["file"]),
-        both(data["deck_ru"], data["deck_zh"], "p", "deck"),
-        f'<p class="meta">{bi_span(data["status_ru"], data["status_zh"])}</p>',
-    ]
-    for title_ru, title_zh, paras_ru, paras_zh in data["sections"]:
-        parts.append(f"<h2>{bi_span(title_ru, title_zh)}</h2>")
-        parts.append(paras(paras_ru, "ru"))
-        parts.append(paras(paras_zh, "zh"))
-    parts.append(f'<h2>{bi_span("Страницы по теме", "相关页面")}</h2>')
-    rows = [f'<li><a href="{esc(href)}">{bi_span(ru, zh)}</a></li>' for href, ru, zh in data["links"]]
-    rows += [f'<li><a href="{esc(url)}">{esc(name)}</a></li>' for name, url in data["sources"]]
-    parts.append('<ul class="facts">\n' + "\n".join(rows) + "\n</ul>")
-    parts.append(f'<p class="updated">{bi_span(content.UPDATED_RU, content.UPDATED_ZH)}</p>')
-    desc_ru, _desc_zh = descriptions(data["file"], data["h1_ru"], data["h1_zh"])
-    ld = article_ld(data["file"], data["h1_ru"], desc_ru, load_credits())
-    write_page(data["file"], "Русский след", "俄罗斯足迹", "\n".join(parts), credits=load_credits(), photos=["nikolsky"], ld=ld)
 
 
 def missing_page():
@@ -1121,7 +1096,6 @@ def llms_txt():
         "mesta.html": "Места",
         "urok.html": content.LESSON["h1_ru"],
         "proekt.html": "Проект",
-        "russkiy-sled.html": content.KONKURS["h1_ru"],
     }
     for page in content.PAGES:
         titles[page["file"]] = page["h1_ru"]
@@ -1130,7 +1104,7 @@ def llms_txt():
     for walk in content.WALKS:
         titles[walk["file"]] = "Прогулка: " + walk["title_ru"]
     order = [page["file"] for page in content.PAGES]
-    order += ["marshruty.html", "mesta.html", "urok.html", "russkiy-sled.html", "proekt.html"]
+    order += ["marshruty.html", "mesta.html", "urok.html", "proekt.html"]
     order += [walk["file"] for walk in content.WALKS]
     order += [route["file"] for route in content.ROUTES]
     lines = [
@@ -1141,7 +1115,6 @@ def llms_txt():
         f"Сайт: {page_url('index.html')}",
         "Языки: русский и китайский на одной странице. Китайский включается кнопкой, отдельного адреса нет.",
         "Авторский проект, не путеводитель.",
-        "Конкурсная работа: видео о русских храмах Шанхая для конкурса «Русский след», номинация «Архитектурное наследие».",
         "Булавка только у дома, который видно с тротуара. У 1950 года, флотилии Старка и приюта Иоанна точки нет.",
         "",
         "## Страницы",
@@ -1170,7 +1143,7 @@ def write_seo_files():
     pages = [page["file"] for page in content.PAGES]
     pages += [route["file"] for route in content.ROUTES]
     pages += [walk["file"] for walk in content.WALKS]
-    pages += ["marshruty.html", "mesta.html", "urok.html", "russkiy-sled.html", "proekt.html"]
+    pages += ["marshruty.html", "mesta.html", "urok.html", "proekt.html"]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for filename in pages:
         lines.append("  <url>")
@@ -1195,7 +1168,7 @@ def write_text_bundle():
     lines = []
     for page in content.PAGES:
         lines.append("## " + page["h1_ru"])
-        for key in ("deck_ru", "who_ru", "quote_ru", "class_ru"):
+        for key in ("deck_ru", "who_ru", "quote_ru"):
             if page.get(key):
                 lines.append(page[key])
         lines.extend(page.get("paras_ru") or [])
@@ -1220,11 +1193,6 @@ def write_text_bundle():
     lines.append(content.LESSON["goal_ru"])
     for title_ru, _title_zh, paras_ru, _paras_zh in content.PROJECT:
         lines.append("## " + title_ru)
-        lines.extend(paras_ru)
-    lines.append("## " + content.KONKURS["h1_ru"])
-    lines.append(content.KONKURS["deck_ru"])
-    for title_ru, _title_zh, paras_ru, _paras_zh in content.KONKURS["sections"]:
-        lines.append("### " + title_ru)
         lines.extend(paras_ru)
     bundle = ROOT.parent / "texts"
     bundle.mkdir(exist_ok=True)
@@ -1456,7 +1424,6 @@ def main():
     catalog_page()
     lesson_page()
     project_page()
-    konkurs_page()
     missing_page()
     write_seo_files()
     write_text_bundle()
