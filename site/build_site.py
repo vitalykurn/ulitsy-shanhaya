@@ -283,7 +283,7 @@ def page_shell(filename, title_ru, title_zh, body, wide=False, leaflet=False, sc
   <meta property="og:image" content="{esc(image or ('https://' + content.DOMAIN + '/img/avatar.jpg'))}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="img/avatar.jpg">
-  <link rel="stylesheet" href="css/style.css?v=20261124">{leaflet_css}
+  <link rel="stylesheet" href="css/style.css?v=20261126">{leaflet_css}
   {ld}
 </head>
 <body data-lang="ru">
@@ -1289,6 +1289,23 @@ def walk_end_label(key, lang):
 WALK_SCRIPTS = '<script src="vendor/leaflet/leaflet.js"></script>\n<script src="js/basemap.js?v=20261124"></script>\n<script src="js/walks.js?v=20261124"></script>'
 
 
+def walk_video_html(walk):
+    """Вертикальный ролик прогулки, если он собран (social/video/make_video.py → site/video)."""
+    src = f"video/progulka-{walk['id']}.mp4"
+    if not (ROOT / src).exists():
+        return ""
+    poster = f"video/progulka-{walk['id']}.jpg"
+    return "\n".join([
+        f'<h2 id="video">{bi_span("Прогулка за минуту", "一分钟看路线")}</h2>',
+        '<figure class="walk-video">',
+        f'<video controls playsinline preload="none" poster="{poster}" width="720" height="1280">'
+        f'<source src="{src}" type="video/mp4"></video>',
+        f'<figcaption>{bi_span("Ролик без звука: маршрут на карте, остановки и фото. Подписи в ролике по-русски.", "无声视频：地图上的路线、站点和照片。视频里的字是俄文。")}'
+        f' <a href="{src}" download>{bi_span("Скачать видео", "下载视频")}</a></figcaption>',
+        "</figure>",
+    ])
+
+
 def walk_page(walk, geo, credits):
     g = geo["walks"][walk["id"]]
     meters = g["m"]
@@ -1343,6 +1360,7 @@ def walk_page(walk, geo, credits):
         "</ul>",
         walk_map_html([walk_data(walk, geo, credits)]),
         f'<p class="meta">{bi_span("Цифры на карте — остановки. Белые кружки — метро на старте и финише. Линия проложена по пешеходным дорожкам OpenStreetMap.", "地图上的数字是站点。白圈是起点和终点的地铁站。线是按OpenStreetMap的步行道画的。")}</p>',
+        walk_video_html(walk),
         f'<h2>{bi_span("Остановки", "站点")}</h2>',
         '<ol class="walk-stops">\n' + "\n".join(stops) + "\n</ol>",
         f'<h2>{bi_span("Перед выходом", "出门前")}</h2>',
@@ -1400,6 +1418,28 @@ def walks_section(geo, credits):
         ),
         walk_map_html([walk_data(w, geo, credits) for w in content.WALKS], "walk-map--all"),
         '<div class="cards">\n' + "\n".join(cards) + "\n</div>",
+        walk_videos_html(),
+    ])
+
+
+def walk_videos_html():
+    videos = [w for w in content.WALKS if (ROOT / f"video/progulka-{w['id']}.mp4").exists()]
+    if not videos:
+        return ""
+    cards = []
+    for w in videos:
+        cards.append(
+            f'<a class="video-card" href="{esc(w["file"])}#video">'
+            f'<img src="video/progulka-{w["id"]}.jpg" alt="" loading="lazy" width="720" height="1280">'
+            f'<span>{bi_span(w["title_ru"], w["title_zh"])}</span></a>'
+        )
+    return "\n".join([
+        f'<h3>{bi_span("Ролики прогулок", "路线视频")}</h3>',
+        both(
+            "Каждая прогулка — в вертикальном ролике меньше минуты: линия на карте, остановки и фото. Ролик — на странице прогулки.",
+            "每条路线都有一个不到一分钟的竖屏视频：地图上的线、站点和照片。视频在路线页面上。",
+        ),
+        '<div class="video-cards">\n' + "\n".join(cards) + "\n</div>",
     ])
 
 

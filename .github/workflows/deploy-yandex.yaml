@@ -59,6 +59,7 @@ jobs:
               *.jpg|*.jpeg) echo "image/jpeg" ;;
               *.webp) echo "image/webp" ;;
               *.ico) echo "image/x-icon" ;;
+              *.mp4) echo "video/mp4" ;;
               *) echo "application/octet-stream" ;;
             esac
           }
