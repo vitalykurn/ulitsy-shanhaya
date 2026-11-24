@@ -7,3 +7,7 @@ __pycache__/
 *.pyc
 Thumbs.db
 .DS_Store
+
+# кэш плиток и пробные кадры роликов
+social/video/tiles/
+social/video/preview/
