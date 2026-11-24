@@ -445,7 +445,7 @@ class Renderer:
             self.center_card(base, [
                 ("Истории всех остановок, адреса и источники", F_BODY, INK, 20),
                 ("ulitsy-shanhaya.ru", F_BIG, self.color, 30),
-                ("Виталий Курносенко · История России на улицах Шанхая", F_META, MUTED, 10),
+                ("История России на улицах Шанхая", F_META, MUTED, 10),
             ], a, 1420)
         return base.convert("RGB")
 
