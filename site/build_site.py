@@ -368,7 +368,7 @@ def cards_html():
 def actions_html(compact=False):
     extra = ""
     if not compact:
-        extra = '\n  <a class="ghost" href="urok.html"><span class="ru">Для урока</span><span class="zh">给课堂</span></a>'
+        extra = '\n  <a class="ghost" href="urok.html"><span class="ru">Для семьи и школы</span><span class="zh">给家庭和学校</span></a>'
     return f"""<div class="actions">
   <a class="primary" href="karta.html"><span class="ru">Открыть карту</span><span class="zh">打开地图</span></a>
   <a class="ghost" href="marshruty.html"><span class="ru">Начать маршрут</span><span class="zh">开始路线</span></a>{extra}
@@ -665,14 +665,14 @@ def place_extra(filename):
             related.append(f'<a href="{esc(href)}">{bi_span(other["title_ru"], other["title_zh"])}</a>')
     route_bit = ""
     if route:
-        route_bit = f'<p><a href="{esc(route["file"])}">{bi_span("Учебный маршрут: " + route["title_ru"], "课堂路线：" + route["title_zh"])}</a></p>'
+        route_bit = f'<p><a href="{esc(route["file"])}">{bi_span("Маршрут с вопросами: " + route["title_ru"], "问答路线：" + route["title_zh"])}</a></p>'
     related_bit = ""
     if related:
         related_bit = f'<p>{bi_span("Рядом по смыслу:", "意思上相邻的：")} {" ".join(related)}</p>'
     return "\n".join([
         f'<h2>{bi_span("Важно не перепутать", "别弄混")}</h2>',
         both(place["confuse_ru"], place["confuse_zh"]),
-        f'<h2>{bi_span("Вопрос для школьника", "给同学的问题")}</h2>',
+        f'<h2>{bi_span("Вопрос к месту", "关于这个地方的问题")}</h2>',
         both(place["ask_ru"], place["ask_zh"]),
         f'<h2>{bi_span("Что установлено точно", "已经核对过的")}</h2>',
         both(place["sure_ru"], place["sure_zh"]),
@@ -895,11 +895,11 @@ def route_page(route):
         f'<h2>{bi_span("Источники", "出处")}</h2>',
         facts_html(facts),
         both(
-            "Учителю: те же ссылки, что и мне. Отдельной методички нет. Если печатать, на листе останутся вопросы и адреса страниц.",
-            "给老师：链接和我用的是同一批。没有单独的教案。打印出来会留下问题和页面地址。",
+            "Учителю или родителю: те же ссылки, что и мне. Отдельной методички нет. Если печатать, на листе останутся вопросы и адреса страниц.",
+            "给老师或家长：链接和我用的是同一批。没有单独的教案。打印出来会留下问题和页面地址。",
         ),
         f'<p class="noprint"><button type="button" data-print>{bi_span("Распечатать маршрут", "打印路线")}</button></p>',
-        f'<p><a href="marshruty.html">{bi_span("Все маршруты", "全部路线")}</a> · <a href="urok.html">{bi_span("Лист для урока", "课堂纸")}</a></p>',
+        f'<p><a href="marshruty.html">{bi_span("Все маршруты", "全部路线")}</a> · <a href="urok.html">{bi_span("Лист с вопросами", "问答纸")}</a></p>',
         f'<p class="updated">{bi_span(content.UPDATED_RU, content.UPDATED_ZH)}</p>',
     ])
     desc_ru, _desc_zh = descriptions(route["file"], route["title_ru"], route["title_zh"])
@@ -934,7 +934,7 @@ def routes_index():
         f"<h1>{bi_span('Маршруты', '路线')}</h1>",
         answer_p("marshruty.html"),
         walks_section(geo, credits),
-        f'<h2>{bi_span("Листы для урока", "课堂纸")}</h2>',
+        f'<h2>{bi_span("Листы с вопросами", "问答纸")}</h2>',
         both(
             "Шесть листов, по одной истории на лист. Вопрос до прогулки, задание на месте и вопрос после.",
             "六张纸，一个故事一张。出门前的问题、现场任务和回来后的问题。",
@@ -942,7 +942,7 @@ def routes_index():
             "deck",
         ),
         '<div class="cards">\n' + "\n".join(cards) + "\n</div>",
-        f'<p><a href="urok.html">{bi_span("Общий лист для урока", "总的课堂纸")}</a></p>',
+        f'<p><a href="urok.html">{bi_span("Общий лист для семьи и школы", "总的问答纸")}</a></p>',
     ])
     write_page("marshruty.html", "Маршруты", "路线", body, wide=True, leaflet=True, scripts=WALK_SCRIPTS)
 
@@ -967,8 +967,8 @@ def catalog_page():
         f"<h1>{bi_span('Места', '地点')}</h1>",
         answer_p("mesta.html"),
         both(
-            "Фильтры по периоду, типу места и школьной теме. Поиск — по названию, улице или слову в тексте.",
-            "按年代、地点类型和课堂题目筛选。搜索名称、街名或正文里的词。",
+            "Фильтры по периоду, типу места и теме для семьи и школы. Поиск — по названию, улице или слову в тексте.",
+            "按年代、地点类型和家庭学校题目筛选。搜索名称、街名或正文里的词。",
             "p",
             "deck",
         ),
@@ -981,7 +981,7 @@ def catalog_page():
         filter_buttons_attr("data-period-filter", content.PERIOD_FILTERS),
         f'<p class="filter-label">{bi_span("Тип места", "地点类型")}</p>',
         filter_buttons_attr("data-kind-filter", content.KIND_FILTERS),
-        f'<p class="filter-label">{bi_span("Школьная тема", "课堂题目")}</p>',
+        f'<p class="filter-label">{bi_span("Тема", "题目")}</p>',
         filter_buttons("data-theme"),
         f'<p data-empty hidden>{bi_span("Такого места в каталоге нет.", "目录里没有这个地点。")}</p>',
         '<div class="cards">\n' + "\n".join(cards) + "\n</div>",
@@ -1017,10 +1017,10 @@ def lesson_page():
         both(lesson["there_ru"], lesson["there_zh"]),
         f'<h2>{bi_span("Вопрос после", "结束后的问题")}</h2>',
         both(lesson["after_ru"], lesson["after_zh"]),
-        f'<h2>{bi_span("Ученику", "给学生")}</h2>',
+        f'<h2>{bi_span("Читателю", "给读者")}</h2>',
         both(lesson["pupil_ru"], lesson["pupil_zh"]),
         f"<ul>\n{links}\n</ul>",
-        f'<h2>{bi_span("Учителю", "给老师")}</h2>',
+        f'<h2>{bi_span("Учителю и родителю", "给老师和家长")}</h2>',
         both(lesson["teacher_ru"], lesson["teacher_zh"]),
         f'<p><a href="istochniki.html">{bi_span("Список источников", "出处名单")}</a></p>',
         f'<p class="noprint"><button type="button" data-print>{bi_span("Распечатать лист", "打印这一页")}</button></p>',
@@ -1051,7 +1051,7 @@ def project_page():
         f'<li><a href="karta.html">{bi_span("Карта", "地图")}</a></li>\n'
         f'<li><a href="mesta.html">{bi_span("Места", "地点")}</a></li>\n'
         f'<li><a href="marshruty.html">{bi_span("Маршруты", "路线")}</a></li>\n'
-        f'<li><a href="urok.html">{bi_span("Для урока", "课堂")}</a></li>\n'
+        f'<li><a href="urok.html">{bi_span("Для семьи и школы", "家庭和学校")}</a></li>\n'
         f'<li><a href="istochniki.html#proverka">{bi_span("Как я проверяю", "我怎么核对")}</a></li>\n'
         f'<li><a href="{esc(content.VK_COMMUNITY)}">VK</a></li>\n'
         f'<li><a href="{esc(content.TG_CHANNEL)}">Telegram</a></li>\n'
